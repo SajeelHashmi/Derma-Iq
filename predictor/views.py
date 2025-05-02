@@ -4,57 +4,37 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from PIL import Image
-from .unet import model  # Import the model once
+from .ai_models import AIWorker
 from datetime import datetime
 import cv2 
 
-@csrf_exempt
 def predict(request):
     if request.method == 'POST':
-        uploaded_file = request.FILES.get('image')
+        face_frontal = request.FILES.get("face_frontal")
+        face_left = request.FILES.get("face_left")
+        face_right = request.FILES.get("face_right")
+        faces = [face_frontal, face_left, face_right]
 
-        if uploaded_file:
-            # Create timestamp for unique folder
-            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            base_path = os.path.join(settings.BASE_DIR, 'predictions')
-            os.makedirs(base_path, exist_ok=True)
+        if not all(faces):
+            return render(request, 'predict.html', context={"error": "Please upload all three images."})
 
-            # Save original image
-            original_image_path = os.path.join(base_path, 'received.jpg')
-            with open(original_image_path, 'wb+') as f:
-                for chunk in uploaded_file.chunks():
-                    f.write(chunk)
+        ai_pipe = AIWorker()
+        results = {}
+        # open image and convert to numpy array
+        face_frontal = Image.open(face_frontal)
+        face_frontal = np.array(face_frontal)
+        
+        face_left = Image.open(face_left)
+        face_right = np.array(face_right)
+        
+        face_right = Image.open(face_right)
+        face_left = np.array(face_left)
 
-            # Preprocess: grayscale, resize to 256x256x1
-            img = Image.open(original_image_path).convert('L')  # Grayscale
-            img = np.array(img)  # Convert to NumPy array
+        results['face_frontal'] = ai_pipe.predict(face_frontal)
+        results['face_left'] = ai_pipe.predict(face_left)
+        results['face_right'] = ai_pipe.predict(face_right)
 
-            # Apply histogram equalization using OpenCV
-            equalized = cv2.equalizeHist(img)
 
-            # Resize to 256x256
-            equalized_resized = cv2.resize(equalized, (256, 256))
 
-            # Normalize and reshape for model input
-            img_array = equalized_resized.astype(np.float32) / 255.0  # Normalize to [0, 1]
-            img_array = img_array[..., np.newaxis]  # Add channel dimension
-            img_array = np.expand_dims(img_array, axis=0)
-            # Predict with model → (1, 256, 256, 14)
-            predictions = model.predict(img_array)[0]  # shape: (256, 256, 14)
-
-            for mask_index in range(predictions.shape[-1]):
-                mask_folder = os.path.join(base_path, f'mask_{mask_index}')
-                os.makedirs(mask_folder, exist_ok=True)
-                mask = predictions[..., mask_index]
-
-                for threshold in np.arange(0.1, 1.0, 0.1):
-                    binary_mask = (mask > threshold).astype(np.uint8) * 255
-                    mask_img = Image.fromarray(binary_mask)
-                    mask_img_path = os.path.join(mask_folder, f'thresh{threshold:.1f}.png')
-                    mask_img.save(mask_img_path)
-
-            return render(request, 'predict_success.html', {
-                'path': base_path
-            })
     else:
         return render(request, 'predict.html',context={"angles":["front","left","right"]})
