@@ -27,7 +27,8 @@ class AIWorker:
         
         # Thresholds for binary mask generation
         # These would be determined from previous validation
-        self.thresholds_general_diseases = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]  # Default thresholds
+
+        self.thresholds_general_diseases = [0.90, 0.40, 0.90, 0.90, 0.90, 0.10, 0.60, 0.90, 0.90, 0.80]  # Default thresholds
         self.threshold_acne = 0.5  # Default threshold
         
         print("Loading models...")
@@ -41,7 +42,7 @@ class AIWorker:
     
     def load_model(self, model_path):
         """Load a Keras model from the specified path"""
-        return tf.keras.models.load_model(model_path)
+        return tf.keras.models.load_model(model_path,compile=False)
     
     def preprocess_image(self, image: np.array) -> np.array:
         """
@@ -101,9 +102,7 @@ class AIWorker:
         
         # If no face detected, use the entire image
         if face is None or (isinstance(face, np.ndarray) and face.size == 0):
-            print("No face detected, using the entire image")
-            face = original_image
-        
+            raise ValueError("No face detected in the image")
         # Preprocess the isolated face image for model input
         preprocessed_image = self.preprocess_image(face)
         
@@ -133,9 +132,7 @@ class AIWorker:
         results = {
             "original_image": original_image,
             "face_image": face,
-            "general_disease_raw_masks": predictions_general[0],  # Remove batch dimension
             "general_disease_binary_masks": general_disease_binary_masks,
-            "specific_acne_raw_mask": predictions_acne[0, ..., 0],  # Remove batch and channel dimensions
             "specific_acne_binary_mask": acne_binary_mask
         }
         

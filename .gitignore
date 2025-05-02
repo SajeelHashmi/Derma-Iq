@@ -9,6 +9,8 @@ __pycache__/
 dist/
 build/
 
+kaggle.json
+download_models.py
 # Virtualenv
 env/
 .venv/

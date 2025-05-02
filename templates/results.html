@@ -1,0 +1,16 @@
+{% for angle, res in visualizations.items %}
+    <h2>Angle: {{ angle }}</h2>
+    
+    <h3>Original Face:</h3>
+    <img src="{{ res.face }}" alt="Face Image"><br>
+
+    <h3>General Diseases:</h3>
+    {% for r in res.general_diseases %}
+        <strong>Class name:</strong> {{ r.class_name }}<br>
+        <img src="{{ r.image }}" alt="Disease Mask"><br>
+    {% endfor %}
+
+    <h3>Acne Mask:</h3>
+    <img src="{{ res.acne }}" alt="Acne Mask"><br>
+    <hr>
+{% endfor %}
