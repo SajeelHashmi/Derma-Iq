@@ -21,6 +21,7 @@ db.sqlite3
 media/
 staticfiles/
 *.sqlite3
+predictions/
 *.log
 
 # VSCode
@@ -50,3 +51,4 @@ yarn.lock
 
 # Tailwind CSS output (optional)
 static/css/tailwind.css
+
