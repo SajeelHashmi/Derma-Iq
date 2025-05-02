@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}
+    Welcome to the Home Page
+{% endblock title %}
+{% block body %}
+
+<div class="container section green my-5 p-5">
+    <div class="row justify-content-between align-items-start g-5">
+      <!-- Left Side: Heading and Text -->
+      <div class="col-md-6">
+        <h1 class="contact-us-heading mb-4">Contact Us</h1>
+        <p class="prata section-text">
+          Let's Connect and Transform Your Skincare Journey. Have a question about your skin or need personalized guidance? 
+          We're here for you. Reach out today and take the first step toward healthier, more confident skin with DermaIQ.
+        </p>
+      </div>
+
+      <!-- Right Side: Contact Form -->
+      <div class="col-md-6">
+        <form>
+          <div class="mb-3">
+            <label for="name" class="form-label">Your Name</label>
+            <input type="text" class="form-control" id="name" placeholder="Enter your name" required />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Your Email</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter your email" required />
+          </div>
+          <div class="mb-3">
+            <label for="message" class="form-label">Your Message</label>
+            <textarea class="form-control" id="message" rows="5" placeholder="Type your message here..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endblock body %}

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block title %}Face Scan{% endblock title %}
+
+{% block body %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-10 text-center">
+      <h2 class="mb-4">Upload or Capture Your Face from 3 Angles</h2>
+
+      <form method="POST" action="{% url 'scan' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row text-center mb-4">
+
+          <!-- Face Capture Card Template -->
+          {% for angle in angles %}
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Face ({{ angle|title }})</label>
+            <div class="mb-2">
+              <img id="preview_{{ angle }}" src="https://static.vecteezy.com/system/resources/thumbnails/036/594/092/small_2x/man-empty-avatar-photo-placeholder-for-social-networks-resumes-forums-and-dating-sites-male-and-female-no-photo-images-for-unfilled-user-profile-free-vector.jpg" class="img-fluid border rounded mb-2" style="max-height: 200px;">
+            </div>
+            <input type="file" accept="image/*" class="form-control mb-2" name="face_{{ angle }}" id="file_{{ angle }}" required>
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="openCamera('{{ angle }}')">Use Webcam</button>
+          </div>
+          {% endfor %}
+
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg px-5">Submit for Analysis</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Webcam Modal -->
+<div id="cameraModal" class="modal" tabindex="-1" style="display:none;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <h5 class="modal-title">Capture Face</h5>
+        <button type="button" class="btn-close" onclick="closeCamera()"></button>
+      </div>
+      <div class="modal-body">
+        <video id="video" width="100%" autoplay playsinline></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeCamera()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="capturePhoto()">Capture</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+.modal-dialog { max-width: 500px; }
+</style>
+
+<script>
+  document.querySelectorAll("input[type='file']").forEach(input => {
+  input.addEventListener("change", function (event) {
+    const angle = this.id.replace("file_", "");
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById(`preview_${angle}`).src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+});
+
+let currentAngle = null;
+let stream = null;
+
+function openCamera(angle) {
+  currentAngle = angle;
+  document.getElementById("cameraModal").style.display = "block";
+
+  const video = document.getElementById("video");
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(s => {
+      stream = s;
+      video.srcObject = s;
+    }).catch(err => {
+      alert("Camera not accessible: " + err.message);
+      closeCamera();
+    });
+}
+
+function closeCamera() {
+  document.getElementById("cameraModal").style.display = "none";
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+  }
+}
+
+function capturePhoto() {
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const context = canvas.getContext("2d");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  canvas.toBlob(blob => {
+    const file = new File([blob], `${currentAngle}.jpg`, { type: "image/jpeg" });
+    const fileInput = document.getElementById(`file_${currentAngle}`);
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    fileInput.files = dataTransfer.files;
+
+    // Preview
+    document.getElementById(`preview_${currentAngle}`).src = URL.createObjectURL(blob);
+  });
+
+  closeCamera();
+}
+</script>
+
+{% endblock body %}

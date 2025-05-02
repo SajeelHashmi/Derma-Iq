@@ -3,6 +3,723 @@
     Welcome to the Home Page
 {% endblock title %}
 {% block body %}
-    <h1>Welcome to the Home Page</h1>
-    <p>This is the content of the home page.</p>
+<div class="container  section green  p-5 mb-5" >
+    <div class="row align-items-center">
+      <!-- Left Side: Hero Text + CTA -->
+      <div class="col-md-8 px-5">
+        <h1 class="mb-4 hero-heading text-wrap">Innovating Skincare for a Healthier Tomorrow </h1>
+        <p class="mb-4 hero-subtext fs-3">At DermaIQ, we use AI to detect facial skin concerns and deliver personalized skincare solutions. Experience smarter, simpler, and more effective skincare—anytime, anywhere.</p>
+        <a href="{% url 'scan' %}" class="btn button-cta">Scan Now</a>
+      </div>
+  
+      <!-- Right Side: Hero Image -->
+      <div class="col-md-4 hero-image-container">
+        <img src="https://media.istockphoto.com/id/1462119292/photo/happy-with-her-skincare-routine-woman-in-her-20s-applies-beauty-cream-on-her-face.jpg?s=1024x1024&w=is&k=20&c=G_xmWjxF8z0CYia6PO8cSwaUp1g8eVG_jPghhOVV6cE=" alt="Hero Image" class="img-fluid">
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <div class="container p-5 mb-5 section shadow aboutUs "  >
+    <div class="row ">
+      <div class="col-md-6">
+        <h2 class="mb-4 section-heading">About Us</h2>
+        <p class="mb-3   section-text-about  ">At DermaIQ, we believe that technology and care go hand in hand in building a healthier, more confident world. We stay at the forefront of AI innovation to deliver skincare solutions that make a real difference in people’s lives today, while shaping the future of personalized skin health. By putting our users at the center of everything we do, we craft experiences that not only meet but exceed expectations. Our goal is to empower individuals with the tools and knowledge to understand their skin better, make informed choices, and feel confident in their own beauty. Through innovation, compassion, and a commitment to excellence, we are redefining skincare — one face at a time.</p>
+      </div>
+      
+      
+      <div class="col-md-6">
+        <img src="https://media.istockphoto.com/id/1337199661/photo/beautiful-caucasian-woman-applying-cream-on-face.jpg?s=1024x1024&w=is&k=20&c=4ylvSnCfLjEqBwAyB3Ya_AHaknmreeQ2joyw1MTJU8w=" alt="Section Image" class="img-fluid">
+      </div>
+  
+
+    </div>
+  </div>
+
+  <section class="storytelling-section container  py-5 mt-5">
+    <div class="container ">
+      <!-- Main heading -->
+      <div class="row mb-5">
+        <div class="col-12 text-center">
+          <h2 class="text-center mb-5 section-heading-2 main-heading-story">Your Path to Healthier Skin</h2>
+          <p class="section-subheading main-subheading-story">Follow Sarah's journey from frustration to confidence</p>
+        </div>
+      </div>
+  
+      <!-- Story Stage 1: The Problem -->
+      <div class="story-stage row align-items-center mb-5" id="story-stage-1">
+        <div class="col-md-6 order-md-1 order-2">
+          <div class="story-content">
+            <h3 class="stage-heading">Struggling with Acne</h3>
+            <p class="section-text">Sarah had been battling persistent acne for years. Traditional treatments offered temporary relief, but the problem always returned. The constant cycle affected her confidence and daily life.</p>
+            <div class="story-quote">
+              <blockquote>"I felt like I had tried everything. Nothing seemed to work long-term, and I was starting to lose hope."</blockquote>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 order-md-2 order-1">
+          <div class="story-image-container">
+            <img src="https://images.pexels.com/photos/6476081/pexels-photo-6476081.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Person with acne concerns" class="img-fluid rounded shadow">
+          </div>
+        </div>
+      </div>
+  
+      <!-- Story Stage 2: Discovery -->
+      <div class="story-stage row align-items-center mb-5" id="story-stage-2">
+        <div class="col-md-6">
+          <div class="story-image-container">
+            <img src="https://images.pexels.com/photos/6001486/pexels-photo-6001486.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Person discovering the app" class="img-fluid rounded shadow">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="story-content">
+            <h3 class="stage-heading">Discovering a New Approach</h3>
+            <p class="section-text">Through a friend's recommendation, Sarah found our AI-powered skin analysis tool. Unlike other solutions that just treated symptoms, our approach promised to identify root causes and create personalized treatment plans.</p>
+            <div class="story-quote">
+              <blockquote>"What caught my attention was how the technology could analyze beyond just the surface symptoms."</blockquote>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Story Stage 3: Scanning & Analysis -->
+      <div class="story-stage row align-items-center mb-5" id="story-stage-3">
+        <div class="col-md-6 order-md-1 order-2">
+          <div class="story-content">
+            <h3 class="stage-heading">Advanced Skin Analysis</h3>
+            <p class="section-text">Using just her smartphone camera, Sarah scanned her face with our app. Our computer vision technology identified her specific acne type, contributing factors, and skin condition details that aren't visible to the naked eye.</p>
+            <div class="story-fact">
+              <div class="fact-icon">
+                <i class="bi bi-lightbulb"></i>
+              </div>
+              <div class="fact-text">
+                Our AI analyzes over 500 facial data points to determine the precise nature of skin conditions.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 order-md-2 order-1">
+          <div class="story-image-container">
+            <img src="https://images.pexels.com/photos/7394260/pexels-photo-7394260.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Person scanning face with app" class="img-fluid rounded shadow">
+          </div>
+        </div>
+      </div>
+  
+      <!-- Story Stage 4: Personalized Recommendations -->
+      <div class="story-stage row align-items-center mb-5" id="story-stage-4">
+        <div class="col-md-6">
+          <div class="story-image-container">
+            <img src="https://images.pexels.com/photos/6476079/pexels-photo-6476079.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Person following recommendations" class="img-fluid rounded shadow">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="story-content">
+            <h3 class="stage-heading">Personalized Treatment Plan</h3>
+            <p class="section-text">The app created a comprehensive plan for Sarah that included lifestyle adjustments, dietary recommendations, and a skincare routine specifically calibrated for her skin type and condition severity.</p>
+            <div class="recommendation-list">
+              <div class="recommendation-item">
+                <span class="check-icon">✓</span>
+                <span>Increased water intake</span>
+              </div>
+              <div class="recommendation-item">
+                <span class="check-icon">✓</span>
+                <span>Anti-inflammatory diet adjustments</span>
+              </div>
+              <div class="recommendation-item">
+                <span class="check-icon">✓</span>
+                <span>Targeted skincare products</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Story Stage 5: Professional Connection -->
+      <div class="story-stage row align-items-center mb-5" id="story-stage-5">
+        <div class="col-md-6 order-md-1 order-2">
+          <div class="story-content">
+            <h3 class="stage-heading">Expert Guidance</h3>
+            <p class="section-text">For additional support, our app connected Sarah with a dermatologist who specialized in her specific condition. The doctor could review the AI analysis and provide further personalized guidance.</p>
+            <div class="story-quote">
+              <blockquote>"Having a specialist who could see my detailed analysis saved so much time. We could focus immediately on solutions rather than diagnosis."</blockquote>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 order-md-2 order-1">
+          <div class="story-image-container">
+            <img src="https://images.pexels.com/photos/8076181/pexels-photo-8076181.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Virtual consultation with dermatologist" class="img-fluid rounded shadow">
+          </div>
+        </div>
+      </div>
+  
+      <!-- Story Stage 6: Results -->
+      <div class="story-stage row align-items-center" id="story-stage-6">
+        <div class="col-md-6">
+          <div class="story-image-container">
+            <img src="https://images.pexels.com/photos/3764019/pexels-photo-3764019.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Person with clear skin, confident" class="img-fluid rounded shadow">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="story-content">
+            <h3 class="stage-heading">Transformation</h3>
+            <p class="section-text">Within 8 weeks, Sarah saw remarkable improvement. Her skin cleared significantly, and she gained understanding about how to maintain her results long-term.</p>
+            <div class="results-metrics">
+              <div class="metric">
+                <div class="metric-value">85%</div>
+                <div class="metric-label">Reduction in acne</div>
+              </div>
+              <div class="metric">
+                <div class="metric-value">90%</div>
+                <div class="metric-label">Increase in confidence</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+
+    </div>
+  </section>
+  
+
+  <div class="container py-5">
+    <h2 class="text-center mb-5 section-heading-2">Reviews✨</h2>
+ 
+    <div id="testimonialCarousel" class="carousel slide pink section p-5" data-bs-ride="carousel">
+      <div class="carousel-inner">
+ 
+        <!-- Slide 1 -->
+        <div class="carousel-item active">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="text-center testimonial-item">
+                <div class="image-container">
+                  <img src="https://media.istockphoto.com/id/2030090019/photo/japanese-woman-smile-and-selfie-in-park-nature-and-path-with-sunshine-city-and-buildings-with.jpg?s=1024x1024&w=is&k=20&c=JdPzPlolzi5ohfNchTouLj2N85eEuyfdRXBtdZW9yV8=" class="img-fluid testimonial-img" alt="Testimonial 1">
+                </div>
+                <p class="mt-3 testimonial-text">"This service is fantastic! Highly recommended."</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="text-center testimonial-item">
+                <div class="image-container">
+                  <img src="https://media.istockphoto.com/id/1200381667/photo/attractive-generation-z-young-woman-of-hispanic-ethnicity-smiling-for-a-portrait.webp?s=2048x2048&w=is&k=20&c=gfscWtp7mggET5NHBDEonQVcRlqTHTQbnYN-mUle04s=" class="img-fluid testimonial-img" alt="Testimonial 2">
+                </div>
+                <p class="mt-3 testimonial-text">"Absolutely love the experience and support."</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="text-center testimonial-item">
+                <div class="image-container">
+                  <img src="https://media.istockphoto.com/id/1288613953/photo/young-hispanic-woman-smiling-happy-walking-at-the-park.webp?s=2048x2048&w=is&k=20&c=fYDfEY16BZyTmpDNI72OB3quEllfWirSa0KNEqAGLlk=" class="img-fluid testimonial-img" alt="Testimonial 3">
+                </div>
+                <p class="mt-3 testimonial-text">"Game changer for our business!"</p>
+              </div>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- Slide 2 -->
+        <div class="carousel-item">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="text-center testimonial-item">
+                <div class="image-container">
+                  <img src="https://media.istockphoto.com/id/636173070/photo/smiling-asian-woman-looking-at-the-camera.webp?s=2048x2048&w=is&k=20&c=tDNlPi0Ae38ZXDjtbQOa_-cciNo25Ty5Nd4z4VCIt8M=" class="img-fluid testimonial-img" alt="Testimonial 4">
+                </div>
+                <p class="mt-3 testimonial-text">"Great support and easy to use."</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="text-center testimonial-item">
+                <div class="image-container">
+                  <img src="https://media.istockphoto.com/id/1135381120/photo/portrait-of-a-young-woman-outdoors-smiling.webp?s=2048x2048&w=is&k=20&c=GGwJ5daZQW78x9gtbX0klunfXsHnd6pNhSxZopoDifg=" class="img-fluid testimonial-img" alt="Testimonial 5">
+                </div>
+                <p class="mt-3 testimonial-text">"Definitely coming back again."</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="text-center testimonial-item">
+                <div class="image-container">
+                  <img src="https://media.istockphoto.com/id/1384357176/photo/portrait-of-a-handsome-mexican-man.webp?s=2048x2048&w=is&k=20&c=f87LAWkQNJ1LVjNLNRRvissrq5djkqln_Kp-W4PEubA=" class="img-fluid testimonial-img" alt="Testimonial 6">
+                </div>
+                <p class="mt-3 testimonial-text">"Five stars from me!"</p>
+              </div>
+            </div>
+          </div>
+        </div>
+ 
+      </div>
+ 
+      <!-- Controls -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script>
+    let heroTimeline = gsap.timeline();
+    // First hero text comes in
+    // Then the image 
+    // Then Subtext
+    // Then the CTA button
+    heroTimeline.fromTo(".hero-heading", { opacity: 0 ,y:-100 }, {y: 0,opacity: 1, duration: 0.25 });
+    heroTimeline.fromTo(".hero-image-container", { opacity: 0 ,rotation:180,x:500 }, {x: 0,opacity: 1, rotation:0, duration: 0.5 });  
+    heroTimeline.fromTo(".hero-subtext", { opacity: 0 ,x:-500 }, {x: 0,opacity: 1, duration: 0.25 });
+    heroTimeline.fromTo(".button-cta", { opacity: 0 ,y:100 }, {y: 0,opacity: 1, duration: 0.25 });
+    let ctaPulseTween = gsap.to(".button-cta", { scale: 1.10, duration: 0.25, repeat: -1, yoyo: true });
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
+gsap.from(".aboutUs ", {
+  scrollTrigger: {
+    trigger: ".aboutUs",
+    start: "top 80%",
+    end: "bottom 20%",
+    // markers: true,
+    toggleActions: "restart reverse restart reverse",
+
+  },
+  x: -2000,
+  duration: 1,
+});
+
+
+let introTimeline = gsap.timeline({
+  scrollTrigger: {
+    trigger: ".main-heading-story", // the big heading
+    start: "center center",
+    toggleActions: "restart reverse restart reverse",
+    markers: true
+  }
+});
+
+introTimeline.from(".main-heading-story", {
+  y: -200,
+  x: 200,
+  opacity: 0,
+  duration: 1,
+  ease: "power4.out"
+})
+.from(".main-subheading-story", {
+  x: 300,
+  opacity: 0,
+  duration: 1,
+  ease: "power4.out"
+}, "-=0.5"); // overlaps a little for smoother flow
+
+gsap.set(".storytelling-section", {
+    position: "relative",
+    overflow: "hidden"
+  });
+  
+  // ===== MASTER TIMELINE APPROACH =====
+  // Create a master timeline for all stages
+  let masterTimeline = gsap.timeline({
+    scrollTrigger: {
+      trigger: ".storytelling-section",
+      start: "top top",
+      end: "+=500%", // Adjust based on how many sections you have
+      scrub: true,
+      pin: true,
+      anticipatePin: 1,
+      // markers: true // Remove in production
+    }
+  });
+  
+  // === STAGE 1 ANIMATION ===
+  // Initial state
+  gsap.set("#story-stage-1", {
+    opacity: 0,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%"
+  });
+  
+  // Add Stage 1 to master timeline
+  masterTimeline.to("#story-stage-1", {
+    opacity: 1,
+    duration: 1,
+    ease: "power2.out"
+  })
+  .from("#story-stage-1 .stage-heading", {
+    x: -100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "-=0.5")
+  .from("#story-stage-1 .stage-text", {
+    x: -100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "-=0.8")
+  .from("#story-stage-1 .story-quote blockquote", {
+    x: -100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "-=0.8")
+  .from("#story-stage-1 .story-image-container img", {
+    x: 100,
+    opacity: 0,
+    scale: 1.05,
+    duration: 1.5,
+    ease: "power3.out"
+  }, "-=1.5")
+  
+  // Stay on stage 1 for a while then start transitioning out
+  .addLabel("stage1End", "+=1")
+  
+  // === STAGE 2 ANIMATION ===
+  // Initial state for stage 2
+  gsap.set("#story-stage-2", {
+    opacity: 0,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    x: 200,
+    y: 100,
+    rotate: 3, // slight rotation for dynamic entrance
+    zIndex: 2 // overlay on top of stage 1
+  });
+  
+  // Fade out stage 1 while bringing in stage 2
+  masterTimeline.to("#story-stage-1", {
+    opacity: 0,
+    x: -100,
+    duration: 1.5,
+    ease: "power2.inOut"
+  }, "stage1End")
+  
+  // Bring in stage 2 from bottom right
+  .to("#story-stage-2", {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    rotate: 0,
+    duration: 1.5,
+    ease: "power3.out"
+  }, "stage1End")
+  
+  // Animate stage 2 content
+  .from("#story-stage-2 .stage-heading", {
+    x: 100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage1End+=0.5")
+  .from("#story-stage-2 .stage-text", {
+    x: 100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage1End+=0.8")
+  .from("#story-stage-2 .story-quote blockquote", {
+    x: 100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage1End+=1.1")
+  .from("#story-stage-2 .story-image-container img", {
+    x: -100,
+    opacity: 0,
+    scale: 1.05,
+    duration: 1.5,
+    ease: "power3.out"
+  }, "stage1End+=0.5")
+  
+  // Stay on stage 2 for a while
+  .addLabel("stage2End", "+=1")
+  
+  // === STAGE 3 ANIMATION ===
+  // Initial state for stage 3
+  gsap.set("#story-stage-3", {
+    opacity: 0,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    x: -200,
+    y: 100,
+    rotate: -3, // slight rotation opposite to stage 2
+    zIndex: 3 // overlay on top of previous stages
+  });
+  
+  // Fade out stage 2 while bringing in stage 3
+  masterTimeline.to("#story-stage-2", {
+    opacity: 0,
+    x: 100,
+    duration: 1.5,
+    ease: "power2.inOut"
+  }, "stage2End")
+  
+  // Bring in stage 3 from bottom left
+  .to("#story-stage-3", {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    rotate: 0,
+    duration: 1.5,
+    ease: "power3.out"
+  }, "stage2End")
+  
+  // Animate stage 3 content
+  .from("#story-stage-3 .stage-heading", {
+    x: -100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage2End+=0.5")
+  .from("#story-stage-3 .stage-text", {
+    x: -100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage2End+=0.8")
+  .from("#story-stage-3 .story-fact", {
+    y: 50,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage2End+=1.1")
+  .from("#story-stage-3 .story-image-container img", {
+    x: 100,
+    opacity: 0,
+    scale: 1.05,
+    duration: 1.5,
+    ease: "power3.out"
+  }, "stage2End+=0.5")
+  
+  // Stay on stage 3 for a while
+  .addLabel("stage3End", "+=1")
+  
+  // === STAGE 4 ANIMATION ===
+  // Initial state for stage 4
+  gsap.set("#story-stage-4", {
+    opacity: 0,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    x: 200,
+    y: 50,
+    rotate: 2, // slight rotation
+    zIndex: 4 // overlay on top of previous stages
+  });
+  
+  // Fade out stage 3 while bringing in stage 4
+  masterTimeline.to("#story-stage-3", {
+    opacity: 0,
+    x: -100,
+    duration: 1.5,
+    ease: "power2.inOut"
+  }, "stage3End")
+  
+  // Bring in stage 4 from right
+  .to("#story-stage-4", {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    rotate: 0,
+    duration: 1.5,
+    ease: "power3.out"
+  }, "stage3End")
+  
+  // Animate stage 4 content
+  .from("#story-stage-4 .stage-heading", {
+    x: 100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage3End+=0.5")
+  .from("#story-stage-4 .stage-text", {
+    x: 100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage3End+=0.8")
+  .from("#story-stage-4 .recommendation-item", {
+    y: 30,
+    opacity: 0,
+    duration: 0.8,
+    stagger: 0.2,
+    ease: "power3.out"
+  }, "stage3End+=1.1")
+  .from("#story-stage-4 .story-image-container img", {
+    x: -100,
+    opacity: 0,
+    scale: 1.05,
+    duration: 1.5,
+    ease: "power3.out"
+  }, "stage3End+=0.5")
+  
+  // Stay on stage 4 for a while
+  .addLabel("stage4End", "+=1")
+  
+  // === STAGE 5 ANIMATION ===
+  // Initial state for stage 5
+  gsap.set("#story-stage-5", {
+    opacity: 0,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    x: -150,
+    y: 80,
+    rotate: -2, // slight rotation
+    zIndex: 5 // overlay on top of previous stages
+  });
+  
+  // Fade out stage 4 while bringing in stage 5
+  masterTimeline.to("#story-stage-4", {
+    opacity: 0,
+    x: 100,
+    duration: 1.5,
+    ease: "power2.inOut"
+  }, "stage4End")
+  
+  // Bring in stage 5 from left
+  .to("#story-stage-5", {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    rotate: 0,
+    duration: 1.5,
+    ease: "power3.out"
+  }, "stage4End")
+  
+  // Animate stage 5 content
+  .from("#story-stage-5 .stage-heading", {
+    x: -100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage4End+=0.5")
+  .from("#story-stage-5 .stage-text", {
+    x: -100,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage4End+=0.8")
+  .from("#story-stage-5 .story-quote blockquote", {
+    y: 50,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage4End+=1.1")
+  .from("#story-stage-5 .story-image-container img", {
+    x: 100,
+    opacity: 0,
+    scale: 1.05,
+    duration: 1.5,
+    ease: "power3.out"
+  }, "stage4End+=0.5")
+  
+  // Stay on stage 5 for a while
+  .addLabel("stage5End", "+=1")
+  
+  // === STAGE 6 ANIMATION (RESULTS) ===
+  // Initial state for stage 6
+  gsap.set("#story-stage-6", {
+    opacity: 0,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    scale: 0.95,
+    y: 50,
+    zIndex: 6 // overlay on top of previous stages
+  });
+  
+  // Fade out stage 5 while bringing in stage 6
+  masterTimeline.to("#story-stage-5", {
+    opacity: 0,
+    x: -100,
+    duration: 1.5,
+    ease: "power2.inOut"
+  }, "stage5End")
+  
+  // Bring in stage 6 with scale up effect for dramatic results reveal
+  .to("#story-stage-6", {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    duration: 1.5,
+    ease: "power3.out"
+  }, "stage5End")
+  
+  // Animate stage 6 content
+  .from("#story-stage-6 .stage-heading", {
+    y: -50,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage5End+=0.7")
+  .from("#story-stage-6 .stage-text", {
+    y: -50,
+    opacity: 0,
+    duration: 1,
+    ease: "power3.out"
+  }, "stage5End+=1")
+  .from("#story-stage-6 .metric-value", {
+    textContent: 0,
+    duration: 2,
+    snap: { textContent: 1 },
+    stagger: 0.2,
+    ease: "power2.out"
+  }, "stage5End+=1.2")
+  .from("#story-stage-6 .metric-label", {
+    opacity: 0,
+    y: 20,
+    duration: 1,
+    stagger: 0.2,
+    ease: "power3.out"
+  }, "stage5End+=1.5")
+  .from("#story-stage-6 .story-image-container img", {
+    opacity: 0,
+    scale: 1.1,
+    duration: 2,
+    ease: "power3.out"
+  }, "stage5End+=0.7")
+  
+  // Final CTA animation
+  .from(".storytelling-section .lead", {
+    opacity: 0,
+    y: 30,
+    duration: 1,
+    ease: "power3.out"
+  }, "+=0.5")
+  .from(".storytelling-section .btn-primary", {
+    opacity: 0,
+    y: 30,
+    duration: 1,
+    ease: "power3.out"
+  }, "-=0.7");
+  
+  // === OPTIONAL: ADD CONNECTED LINE ANIMATION ===
+  // Create a progress line that grows as user scrolls through story
+  // This requires adding a line element to your HTML
+  
+  // === PERFORMANCE OPTIMIZATION ===
+  // Optionally clear transforms when sections are not in view
+  ScrollTrigger.addEventListener("refresh", () => {
+    console.log("ScrollTrigger refreshed");
+  });
+
+
+    
+  </script>
+ 
+ 
+
+  
 {% endblock body %}

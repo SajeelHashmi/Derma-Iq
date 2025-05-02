@@ -40,7 +40,8 @@ INSTALLED_APPS = [
 
 
     # Custom apps
-    "home"
+    "home",
+    "predictor"
 ]
 
 MIDDLEWARE = [
