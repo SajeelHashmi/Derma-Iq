@@ -104,6 +104,7 @@ class AIWorker:
         if face is None or (isinstance(face, np.ndarray) and face.size == 0):
             raise ValueError("No face detected in the image")
         # Preprocess the isolated face image for model input
+        face = cv2.resize(face, (256, 256))
         preprocessed_image = self.preprocess_image(face)
         
         # Predict using the general disease model

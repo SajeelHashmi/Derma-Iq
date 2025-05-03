@@ -2,6 +2,10 @@
 {% block title %}Face Scan{% endblock title %}
 
 {% block body %}
+<style>
+  .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+  .modal-dialog { max-width: 500px; }
+  </style>
 <div class="container my-5">
   <div class="row justify-content-center">
     <div class="col-md-10 text-center">
@@ -50,12 +54,79 @@
     </div>
   </div>
 </div>
+<div id="scanOverlay" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:0;pointer-events:none;">
+  <img id="scanImage" src="" style="max-height:60vh;border-radius:1rem;box-shadow:0 0 20px rgba(0,255,255,0.6);" />
+  <div id="radar" style="position:absolute;width:60vh;height:60vh;border-radius:50%;border:2px solid rgba(0,255,255,0.3);"></div>
+  <p id="scanText" style="margin-top:2rem;color:#0ff;font-size:1.5rem;font-family:'Courier New', monospace;">Initializing scan...</p>
+</div>
 
-<style>
-.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-.modal-dialog { max-width: 500px; }
-</style>
 
+<script>
+  const scanOverlay = document.getElementById('scanOverlay');
+  const scanImage = document.getElementById('scanImage');
+  const scanText = document.getElementById('scanText');
+  const radar = document.getElementById('radar');
+  
+  // This will run on form submit
+  document.querySelector("form").addEventListener("submit", function (e) {
+    // e.preventDefault(); // stop form for now (remove later)
+    
+    // Get uploaded images
+    const angles = ["frontal", "left", "right"];
+    const files = angles.map(angle => document.getElementById(`file_${angle}`).files[0]);
+    const readerPromises = files.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+    });
+  
+    // Start scan overlay
+    gsap.to(scanOverlay, { autoAlpha: 1, duration: 0.5 });
+  
+    Promise.all(readerPromises).then(imageSrcs => {
+      animateScanSequence(imageSrcs, angles);
+    });
+  });
+  
+  function animateScanSequence(images, angles) {
+    let index = 0;
+  
+    function scanNext() {
+      if (index >= images.length) {
+        // Done, submit form
+        scanText.textContent = "Finalizing results...";
+        setTimeout(() => document.querySelector("form").submit(), 1000);
+        return;
+      }
+  
+      scanImage.src = images[index];
+      scanText.textContent = `Scanning ${angles[index]} view...`;
+  
+      // Reset radar animation
+      gsap.set(radar, { rotation: 0, scale: 0.8, opacity: 0.7 });
+      gsap.to(radar, {
+        rotation: 360,
+        scale: 1.1,
+        opacity: 0.2,
+        duration: 1.5,
+        repeat: 3,
+        ease: "power2.inOut",
+        onComplete: () => {
+          gsap.to(scanText, { text: "Extracting Features...", duration: 1 });
+          setTimeout(() => {
+            index++;
+            scanNext();
+          }, 1500);
+        }
+      });
+    }
+  
+    scanNext();
+  }
+  </script>
+  
 <script>
   document.querySelectorAll("input[type='file']").forEach(input => {
   input.addEventListener("change", function (event) {

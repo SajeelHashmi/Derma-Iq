@@ -6,10 +6,12 @@ import base64
 from django.shortcuts import render
 from django.http import JsonResponse
 from .ai_models import AIWorker
-
+import cv2
+import numpy as np
 
 # intializing to allow preloading of models
 ai_pipe = AIWorker()
+
 def predict(request):
     if request.method == 'POST':
         # Get uploaded images
@@ -65,38 +67,84 @@ def predict(request):
     # GET request: show the upload form
     return render(request, 'predict.html',context={'angles':["frontal", "left", "right"]})
 
+
+
+def overlay_mask_on_face(face_image, mask, color=(0, 255, 0), alpha=1.0):
+    """
+    Overlay a binary mask on a face image.
+
+    Args:
+        face_image (np.ndarray): Original face image (H x W x 3).
+        mask (np.ndarray): Binary mask (H x W) or (H x W x 1).
+        color (tuple): RGB color for the mask overlay.
+        alpha (float): Transparency factor for the overlay.
+
+    Returns:
+        np.ndarray: Image with mask overlaid.
+    """
+    # Ensure mask is 2D
+    if mask.ndim == 3:
+        mask = mask[:, :, 0]
+
+    # Create a color version of the mask
+    colored_mask = np.zeros_like(face_image)
+    colored_mask[mask > 0] = color  # Apply color where mask is non-zero
+
+    # Blend the original image with the colored mask
+    overlayed = cv2.addWeighted(colored_mask, alpha, face_image, 1 - alpha, 0)
+
+    # Where mask is zero, keep the original image
+    result = np.where(mask[:, :, np.newaxis] > 0, overlayed, face_image)
+
+    return result
+
 def generate_visualizations(results):
-    """Generate visualizations for the results to display in the UI"""
+    """Generate visualizations for the results to display in the UI with overlaid masks and class names."""
     visualizations = {}
-    
-    # Process each face direction
+
+    # Class names indexed from 0
+    class_names = [
+        'Acne', 'Blackheads', 'Dark-Spots', 'Dry-Skin', 'Englarged-Pores',
+        'Eyebags', 'Oily-Skin', 'Skin-Redness', 'Whiteheads', 'Wrinkles'
+    ]
+
     for face_direction, face_results in results.items():
         face_viz = {}
-        
-        # Original face image
+
+        # Original face image (for display)
         face_image = face_results["face_image"]
         face_viz["face"] = image_to_base64(face_image)
-        
-        # General disease masks
+
+        # General disease overlays
         general_binary_masks = face_results["general_disease_binary_masks"]
         general_viz = []
-        
+
         for i, mask in enumerate(general_binary_masks):
-            mask_image = image_to_base64(mask)
+            if i == 0:
+                continue
+            # print(f"Mask shape for class {i}: {mask.shape}")
+            # print(f"face_image shape: {face_image.shape}")
+            class_name = class_names[i] if i < len(class_names) else f"Class {i}"
+            # Overlay mask on face image
+            overlayed = overlay_mask_on_face(face_image, mask)
+            mask_image = image_to_base64(overlayed)
             general_viz.append({
-                "class_name": f"Disease Class {i}",
+                "class_name": class_name,
                 "image": mask_image
             })
-        
+
         face_viz["general_diseases"] = general_viz
-        
-        # Acne mask
+
+        # Acne-specific overlay
         acne_mask = face_results["specific_acne_binary_mask"]
-        face_viz["acne"] = image_to_base64(acne_mask)
-        
+        acne_overlay = overlay_mask_on_face(face_image, acne_mask)
+        face_viz["acne"] = image_to_base64(acne_overlay)
+
         visualizations[face_direction] = face_viz
-    
+
     return visualizations
+
+
 
 def image_to_base64(image):
     """Convert numpy array image to base64 for HTML display using PIL"""
@@ -135,16 +183,23 @@ def image_to_base64(image):
 def process_results_for_template(results):
     """Process the raw prediction results for template rendering"""
     processed_results = {}
-    
+    class_names = [
+        'Acne', 'Blackheads', 'Dark-Spots', 'Dry-Skin', 'Englarged-Pores',
+        'Eyebags', 'Oily-Skin', 'Skin-Redness', 'Whiteheads', 'Wrinkles'
+    ]
     # Calculate metrics for each face direction
     for face_direction, face_results in results.items():
         # Calculate percentage of affected area for each disease class
         general_disease_percentages = []
         
         for i, mask in enumerate(face_results["general_disease_binary_masks"]):
+            if i == 0:
+                # Skip the first mask (assumed to be acne)
+                continue
+
             percentage = (np.sum(mask > 0) / mask.size) * 100
             general_disease_percentages.append({
-                "class_name": f"Disease Class {i}",
+                "class_name": f"{class_names[i]}",
                 "affected_percentage": round(percentage, 2)
             })
         
@@ -156,5 +211,35 @@ def process_results_for_template(results):
             "general_diseases": general_disease_percentages,
             "acne": {"affected_percentage": round(acne_percentage, 2)}
         }
+        print(f"Processed results for {face_direction}: {processed_results[face_direction]}")
     
     return processed_results
+
+
+
+
+def llm_endpoint(request):
+    # Write initial prompt add RAG capabilities Use gemini and or mistral with ollama running on another endpoint
+    if request.method == 'POST':
+        # Get the input text from the request
+        input_text = request.POST.get('input_text', '')
+
+        # Get Chat history from the request (if any)
+        chat_history = request.POST.get('chat_history', '')
+
+        if chat_history:
+            chat_history = json.loads(chat_history)
+        
+        else:
+            chat_history =[]
+        
+        
+        # Process the input text using the LLM (this is a placeholder for actual LLM processing)
+        # For now, we'll just echo back the input text
+        response_text = f"Processed: {input_text}"
+        
+        # Return the response as JSON
+        return JsonResponse({'response': response_text})
+    
+    # If not a POST request, return an empty response or render a template
+    return JsonResponse({'response': ''})
