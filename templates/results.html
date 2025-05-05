@@ -128,17 +128,6 @@
                 <div class="card-body">
                     <div class="chat-container" id="chatContainer" style="height: 300px; overflow-y: auto;">
                         <div class="message-list" id="messageList">
-                            <!-- System welcome message -->
-                            <div class="d-flex mb-3">
-                                <div class="avatar me-2">
-                                    <div class="rounded-circle bg-primary d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-                                        <i class="bi bi-robot text-white"></i>
-                                    </div>
-                                </div>
-                                <div class="message-bubble p-3 bg-light rounded">
-                                    <p class="mb-0">Hello! I'm your skin condition assistant. How can I help you today?</p>
-                                </div>
-                            </div>
                             <!-- Messages will be added here dynamically -->
                         </div>
                     </div>
@@ -223,6 +212,35 @@
         const userInput = document.getElementById('userInput');
         const sendButton = document.getElementById('sendButton');
         const typingIndicator = document.getElementById('typingIndicator');
+        const ragInitialized =" {{rag_initialized}} " =="True" ? true : false; // Check if RAG is initialized
+        const resultId = "{{resultId}}"
+        
+        console.log("Result ID:", resultId);
+        console.log("RAG Initialized:", ragInitialized);
+
+        if (ragInitialized) {
+            // Load existing chat history
+            let chatHistory =[]
+            {% for message in chat_history %}
+                chatHistory.push({ sender: "{{ message.sender }}", content: "{{ message.content }}" });
+            {% endfor %}
+            console.log("Chat History:", chatHistory);
+
+
+            chatHistory.forEach(message => {
+                if (message.sender === 'user') {
+                    addUserMessage(message.content);
+                } else if (message.sender === 'assistant') {
+                    addOldBotMessage(message.content);
+                }
+            })
+        }
+        else {
+            // Poll for initial RAG response
+            console.log("RAG not initialized, polling for initial response...");
+            pollForInitialResponse();
+        }
+
         
         // Setup GSAP animation for typing dots
         gsap.to('.dot', {
@@ -232,9 +250,77 @@
             yoyo: true,
             ease: "power1.inOut"
         });
+        function pollForInitialResponse() {
+    // Show typing indicator while waiting
+    typingIndicator.classList.remove('d-none');
+    
+    fetch(`/predict/getRagRes/${resultId}/`)
+        .then(response => {
+            if (response.status === 202) {
+                // Not ready yet, poll again after delay
+                setTimeout(pollForInitialResponse, 1000);
+                return null;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.success) {
+                // Hide typing indicator
+                typingIndicator.classList.add('d-none');
+                // Add the initial message
+                addBotMessage(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error polling for initial response:', error);
+            // Retry after a delay
+            setTimeout(pollForInitialResponse, 1000);
+        });
+}
+
+async function processUserMessage(message) {
+    try {
+        // Show thinking animation while waiting for response
+        typingIndicator.classList.remove('d-none');
+        
+        // Send the message to the correct API endpoint
+        const response = await fetch('/submitRagQuery/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({
+                query: message,
+                result_id: resultId,
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        
+        const data = await response.json();
+        
+        // Add bot response
+        if (data.success) {
+            addBotMessage(data.response);
+        } else {
+            addBotMessage("I'm sorry, I couldn't process your request.");
+        }
+        
+    } catch (error) {
+        console.error('Error:', error);
+        addBotMessage("Sorry, there was an error processing your request. Please try again later.");
+    } finally {
+        // Hide typing indicator if visible due to error
+        typingIndicator.classList.add('d-none');
+    }
+}
         
         // Function to add user message
         function addUserMessage(message) {
+            console.log("Adding user message:", message);
             const userMessageDiv = document.createElement('div');
             userMessageDiv.className = 'd-flex mb-3 justify-content-end';
             userMessageDiv.innerHTML = `
@@ -253,9 +339,28 @@
             });
         }
         
+        function addOldBotMessage(message) {
+            console.log("Adding old bot message:", message);
+            const botMessageDiv = document.createElement('div');
+            botMessageDiv.className = 'd-flex mb-3';
+            botMessageDiv.innerHTML = `
+                <div class="avatar me-2">
+                    <div class="rounded-circle bg-primary d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-robot text-white"></i>
+                    </div>
+                </div>
+                <div class="message-bubble bot-message p-3 rounded">
+                    <p class="mb-0">${escapeHtml(message)}</p>
+                </div>
+            `;
+            messageList.appendChild(botMessageDiv);
+            scrollToBottom();
+           
+        }
         // Function to add bot message with typing animation
         function addBotMessage(message) {
             // Show typing indicator
+            console.log("Adding bot message:", message);
             typingIndicator.classList.remove('d-none');
             scrollToBottom();
             
@@ -296,7 +401,7 @@
                 streamText(message, messageElement);
                 
                 scrollToBottom();
-            }, thinkingTime);
+            }, 0);
         }
         
         // Function to stream text like typing
@@ -343,45 +448,6 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
         
-        // Function to process the user message and get bot response
-        async function processUserMessage(message) {
-            try {
-                // Show thinking animation while waiting for response
-                typingIndicator.classList.remove('d-none');
-                
-                // Send the message to the API
-                const response = await fetch('/chatv1', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCsrfToken() // Get Django CSRF token
-                    },
-                    body: JSON.stringify({
-                        message: message,
-                        // Add any other data you want to send
-                        context: {
-                            currentAngle: "currentAngle" // Get the current face angle from the main script
-                        }
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                
-                const data = await response.json();
-                
-                // Add bot response
-                addBotMessage(data.response || "I'm sorry, I couldn't process your request.");
-                
-            } catch (error) {
-                console.error('Error:', error);
-                addBotMessage("Sorry, there was an error processing your request. Please try again later.");
-            } finally {
-                // Hide typing indicator if visible due to error
-                typingIndicator.classList.add('d-none');
-            }
-        }
         
         // Get CSRF token from cookies (for Django)
         function getCsrfToken() {

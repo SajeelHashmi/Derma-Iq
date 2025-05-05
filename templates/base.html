@@ -338,9 +338,9 @@ letter-spacing: 0%;
         <!-- Left side links -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'futureWork' %}">Join Us</a>
-                </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'about' %}">About Us</a>
+            </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'about' %}">How It Works</a>
                 </li>
@@ -355,34 +355,21 @@ letter-spacing: 0%;
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavMobile" aria-controls="navbarNavMobile" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-<!-- 
-        <div class="collapse navbar-collapse d-none " id="navbarNavMobile">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link 1</a>
-          </li>
-          <li class="nav-item">
-              <a class="nav-link" href="#">Link 2</a>
-          </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="#">Link 3</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="#">Link 4</a>
-              </li>
-          </ul>
-      </div> -->
-        
+
+    
         <!-- Right side links -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'about' %}">About Us</a>
-                </li>
+
                 <li class="nav-item">
                   
                     <a class="nav-link" href="{% url 'contactUs' %}">Contact Us</a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link"
+                  {% if user.is_authenticated %}href="{% url 'logout' %}">Logout{% else %}{% url 'login' %}">Login{% endif %}</a>
+                  
+              </li>
             </ul>
         </div>
     </div>

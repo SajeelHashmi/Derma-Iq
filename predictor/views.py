@@ -1,3 +1,4 @@
+import json
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -7,12 +8,42 @@ from django.shortcuts import render , redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from .ai_models import AIWorker
-from .models import Result
+from .models import Result, Chat, Message
 import cv2
 import numpy as np
+from threading import Thread
+from .rag import Rag
+from django.views.decorators.csrf import csrf_exempt
 
 # intializing to allow preloading of models
 ai_pipe = AIWorker()
+
+
+def init_chatbot_conversation(result:Result):
+    """
+    This function will start the conversation with the LLM when results are compiled and create the chat object in database
+    """
+    print("Starting conversation with LLM")
+    rag = Rag() 
+
+    chat = Chat.objects.create(result=result)
+    print(f"Chat object created with ID: {chat.id}")
+    chat.save()
+
+    face_frontal_results = result.face_frontal_results
+    face_left_results = result.face_left_results
+    face_right_results = result.face_right_results
+
+    res_combined = {
+        "face_frontal": face_frontal_results,
+        "face_left": face_left_results,
+        "face_right": face_right_results,
+    }
+    print("sending initial results to LLM")
+    res = rag.start_converstaion(res_combined)
+    print(f"LLM response received {res}")
+    message = Message.objects.create(chat=chat, sender="assistant", content=res)
+    message.save()
 
 def predict(request):
     if request.user.is_authenticated:
@@ -53,18 +84,22 @@ def predict(request):
             results['face_frontal'] = ai_worker.predict(face_frontal_array)
             results['face_left'] = ai_worker.predict(face_left_array)
             results['face_right'] = ai_worker.predict(face_right_array)
-            
             # Generate visualizations for UI display
             visualizations = generate_visualizations(results)
+            
             model_res_text = process_results_for_template(results)
+         
             result = Result.objects.create(
                 user = user,
-                face_frontal = visualizations['face_frontal']['orignal_face'],
+
+                face_front = visualizations['face_frontal']['orignal_face'],
                 face_left = visualizations['face_left']['orignal_face'],
                 face_right = visualizations['face_right']['orignal_face'],
-                yolo_face_front = results['face_frontal']['face'],
-                yolo_face_left = results['face_frontal']['face'],
-                yolo_face_right = results['face_frontal']['face'],
+                
+                yolo_face_front = visualizations['face_frontal']['face'],
+                yolo_face_left = visualizations['face_left']['face'],
+                yolo_face_right = visualizations['face_right']['face'],
+                
                 general_disease_masks_front = visualizations['face_frontal']['general_diseases'],
                 general_disease_masks_left= visualizations['face_left']['general_diseases'],
                 general_disease_masks_right= visualizations['face_right']['general_diseases'],
@@ -77,10 +112,13 @@ def predict(request):
                 face_left_results = model_res_text['face_left'],
                 face_right_results = model_res_text['face_right'],
 
-                use_for_training = use_for_training 
+                use_data_for_training = use_for_training 
 
             )
+         
             result.save()
+            thread = Thread(target=init_chatbot_conversation, args=(result,))
+            thread.start()
             print(f"Result saved with ID: {result.id}")
             # This template will redirect to result page to avoid time consumption in development and to view old results
             return redirect('view_results', result.id)
@@ -88,8 +126,9 @@ def predict(request):
         except Exception as e:
             import traceback
             error_msg = f"Error processing images: {str(e)}\n{traceback.format_exc()}"
+            print(error_msg)
             messages.error(request, error_msg)
-            return render(request, 'predict.html', context={"error": error_msg})
+            return redirect('scan')
     
     # GET request: show the upload form
     return render(request, 'predict.html',context={'angles':["frontal", "left", "right"]})
@@ -99,14 +138,117 @@ def predict(request):
 def view_results(request, result_id):
     try:
         result = Result.objects.get(id=result_id)
+        visualizations = {}
+        angles = ["frontal", "left", "right"]
+        
+        for angle in angles:
+            visualizations[angle] = {
+
+                "face": getattr(result, f"yolo_face_{angle}" if angle != "frontal" else f"yolo_face_front"),
+                "general_diseases": getattr(result, f"general_disease_masks_{angle}" if angle != "frontal" else f"general_disease_masks_front"),
+                "acne": getattr(result, f"acne_mask_{angle}" if angle != "frontal" else f"acne_mask_front"),
+                "original_face": getattr(result, f"face_{angle}" if angle != "frontal" else f"face_front"),
+            }
+
+        # Get or create chat and messages
+        chat = Chat.objects.filter(result=result).first()
+        messages_qs = Message.objects.filter(chat=chat).order_by('sequence') if chat else []
+
+        # Flag to tell frontend whether RAG conversation is initialized
+        rag_initialized = False if len(messages_qs) == 0 else True
+        chat_history = [{"sender": m.sender, "content": m.content} for m in messages_qs]
+        print(f"history: {chat_history}")
+
         
         return render(request, 'results.html', {
-            'result': result,
+            'visualizations': visualizations,
+            'rag_initialized': rag_initialized,
+            'resultId': result_id,
+            'chat_history': chat_history,
 
         })
     except Result.DoesNotExist:
         messages.error(request, "Result not found.")
         return redirect('predict')
+    
+
+def get_initial_rag_response(request, result_id: int):
+    """
+    Returns the initial bot message if conversation has started.
+    """
+    try:
+        result = Result.objects.get(id=result_id)
+    except Result.DoesNotExist:
+        return JsonResponse({"success": False, "message": "Result not found."}, status=404)
+
+    try:
+        chat = Chat.objects.get(result=result)
+    except Chat.DoesNotExist:
+        return JsonResponse({"success": False, "message": "Chat not initialized yet. Please wait."}, status=202)
+
+    message = Message.objects.filter(chat=chat, sender="assistant").order_by("sequence").first()
+    if not message:
+        return JsonResponse({"success": False, "message": "Chat is initialized but message not ready yet."}, status=202)
+
+    return JsonResponse({
+        "success": True,
+        "message": message.content,
+        "chat_id": chat.id,
+    },status=200)
+
+
+
+@csrf_exempt
+def submit_rag_query(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
+    try:
+        data = json.loads(request.body)
+        result_id = data.get("result_id")
+        user_query = data.get("query")
+        if not result_id or not user_query:
+            return JsonResponse({"success": False, "message": "Missing 'result_id' or 'query'."}, status=400)
+
+        result = Result.objects.get(id=result_id)
+        chat = Chat.objects.get(result=result)
+
+        # Load chat history
+        messages_qs = Message.objects.filter(chat=chat).order_by("sequence")
+        history = [{"role": m.sender, "content": m.content} for m in messages_qs]
+        print(f"history: {history}")
+
+        # Add new user message
+        user_message = Message.objects.create(chat=chat, sender="user", content=user_query)
+        user_message.save()
+        history.append({"role": "user", "content": user_query})
+        history = json.dumps(history,indent=2)
+
+        # Call RAG pipeline
+        rag = Rag()
+        initial_res = {
+            "face_frontal": result.face_frontal_results,
+            "face_left": result.face_left_results,
+            "face_right": result.face_right_results,
+        }
+        ai_response = rag.followup_conversation(initial_res,history,user_query)
+
+        # Save bot response
+        bot_message = Message.objects.create(chat=chat, sender="assistant", content=ai_response)
+        bot_message.save()
+
+        return JsonResponse({
+            "success": True,
+            "response": ai_response,
+        })
+
+    except Result.DoesNotExist:
+        return JsonResponse({"success": False, "message": "Invalid result ID."}, status=404)
+    except Chat.DoesNotExist:
+        return JsonResponse({"success": False, "message": "Chat not initialized."}, status=404)
+    except Exception as e:
+        return JsonResponse({"success": False, "message": f"Error: {str(e)}"}, status=500)
+
+
 
 def overlay_mask_on_face(face_image, mask, color=(0, 255, 0), alpha=1.0):
     """
@@ -273,14 +415,11 @@ def process_results_for_template(results):
             "general_diseases": general_disease_percentages,
             "acne": {"affected_percentage": round(acne_percentage, 2)}
         }
-        print(f"Processed results for {face_direction}: {processed_results[face_direction]}")
     
     return processed_results
 
 
 
-
-def llm_endpoint(request):
     # Write initial prompt add RAG capabilities Use gemini and or mistral with ollama running on another endpoint
     if request.method == 'POST':
         # Get the input text from the request

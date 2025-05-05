@@ -34,3 +34,28 @@ class Result(models.Model):
 
     def __str__(self):
         return f"Result {self.id} for {self.user.username} on {self.created_at}"
+    
+
+
+
+class Chat(models.Model):
+    """Each Chat wil be linked to a result object"""
+    result = models.OneToOneField(Result, on_delete=models.CASCADE, related_name='chats')
+
+class Message(models.Model):
+    """Each message will be linked to a chat object"""
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='messages')
+    sender = models.CharField(max_length=50)  # 'user' or 'bot'
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    sequence = models.IntegerField(default=0)  # To maintain order of messages
+
+    
+    def save(self, *args, **kwargs):
+        if self.sequence == 0:
+            last = Message.objects.filter(chat=self.chat).order_by('-sequence').first()
+            self.sequence = (last.sequence + 1) if last else 1
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.sender}: {self.content} at {self.timestamp}"

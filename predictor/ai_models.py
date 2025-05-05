@@ -42,7 +42,7 @@ class AIWorker:
     
     def load_model(self, model_path):
         """Load a Keras model from the specified path"""
-        return tf.keras.models.load_model(model_path,compile=False)
+        return tf.keras.models.load_model(model_path,compile=False,safe_mode=False)
     
     def preprocess_image(self, image: np.array) -> np.array:
         """
