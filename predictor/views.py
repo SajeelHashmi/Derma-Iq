@@ -3,9 +3,11 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import io
 import base64
-from django.shortcuts import render
+from django.shortcuts import render , redirect
+from django.contrib import messages
 from django.http import JsonResponse
 from .ai_models import AIWorker
+from .models import Result
 import cv2
 import numpy as np
 
@@ -13,11 +15,17 @@ import numpy as np
 ai_pipe = AIWorker()
 
 def predict(request):
+    if request.user.is_authenticated:
+        user = request.user
+    else:
+        messages.error(request, "Sign Up and begin Scanning.")
+        return redirect('signup')
     if request.method == 'POST':
         # Get uploaded images
         face_frontal = request.FILES.get("face_frontal")
         face_left = request.FILES.get("face_left")
         face_right = request.FILES.get("face_right")
+        use_for_training = request.POST.get("use_for_training", False)
         faces = [face_frontal, face_left, face_right]
         
         # Validate that all images are uploaded
@@ -48,26 +56,57 @@ def predict(request):
             
             # Generate visualizations for UI display
             visualizations = generate_visualizations(results)
-            
-            # Prepare context for the template
-            context = {
-                "success": True,
-                "visualizations": visualizations,
-                "results": process_results_for_template(results)
-            }
-            
-            return render(request, 'results.html', context=context)
+            model_res_text = process_results_for_template(results)
+            result = Result.objects.create(
+                user = user,
+                face_frontal = visualizations['face_frontal']['orignal_face'],
+                face_left = visualizations['face_left']['orignal_face'],
+                face_right = visualizations['face_right']['orignal_face'],
+                yolo_face_front = results['face_frontal']['face'],
+                yolo_face_left = results['face_frontal']['face'],
+                yolo_face_right = results['face_frontal']['face'],
+                general_disease_masks_front = visualizations['face_frontal']['general_diseases'],
+                general_disease_masks_left= visualizations['face_left']['general_diseases'],
+                general_disease_masks_right= visualizations['face_right']['general_diseases'],
+
+                acne_mask_front = visualizations['face_frontal']['acne'],
+                acne_mask_left = visualizations['face_left']['acne'],
+                acne_mask_right = visualizations['face_right']['acne'],
+
+                face_frontal_results = model_res_text['face_frontal'],
+                face_left_results = model_res_text['face_left'],
+                face_right_results = model_res_text['face_right'],
+
+                use_for_training = use_for_training 
+
+            )
+            result.save()
+            print(f"Result saved with ID: {result.id}")
+            # This template will redirect to result page to avoid time consumption in development and to view old results
+            return redirect('view_results', result.id)
             
         except Exception as e:
             import traceback
             error_msg = f"Error processing images: {str(e)}\n{traceback.format_exc()}"
-            print(error_msg)
+            messages.error(request, error_msg)
             return render(request, 'predict.html', context={"error": error_msg})
     
     # GET request: show the upload form
     return render(request, 'predict.html',context={'angles':["frontal", "left", "right"]})
 
 
+
+def view_results(request, result_id):
+    try:
+        result = Result.objects.get(id=result_id)
+        
+        return render(request, 'results.html', {
+            'result': result,
+
+        })
+    except Result.DoesNotExist:
+        messages.error(request, "Result not found.")
+        return redirect('predict')
 
 def overlay_mask_on_face(face_image, mask, color=(0, 255, 0), alpha=1.0):
     """
@@ -101,6 +140,18 @@ def overlay_mask_on_face(face_image, mask, color=(0, 255, 0), alpha=1.0):
 def generate_visualizations(results):
     """Generate visualizations for the results to display in the UI with overlaid masks and class names."""
     visualizations = {}
+    CLASS_COLORS = {
+        'Blackheads':      (255, 0, 0, 255),     # Red
+        'Dark-Spots':      (255, 165, 0, 255),   # Orange
+        'Dry-Skin':        (255, 255, 0, 255),   # Yellow
+        'Englarged-Pores': (0, 128, 0, 255),     # Dark Green
+        'Eyebags':         (0, 255, 255, 255),   # Cyan
+        'Oily-Skin':       (0, 0, 255, 255),     # Blue
+        'Skin-Redness':    (128, 0, 128, 255),   # Purple
+        'Whiteheads':      (255, 192, 203, 255), # Pink
+        'Wrinkles':        (139, 69, 19, 255),   # Brown
+        'Acne':            (0, 255, 0, 255),     # Green
+    }
 
     # Class names indexed from 0
     class_names = [
@@ -114,6 +165,7 @@ def generate_visualizations(results):
         # Original face image (for display)
         face_image = face_results["face_image"]
         face_viz["face"] = image_to_base64(face_image)
+        face_viz['orignal_face'] = image_to_base64(face_results["original_image"])
 
         # General disease overlays
         general_binary_masks = face_results["general_disease_binary_masks"]
@@ -126,8 +178,8 @@ def generate_visualizations(results):
             # print(f"face_image shape: {face_image.shape}")
             class_name = class_names[i] if i < len(class_names) else f"Class {i}"
             # Overlay mask on face image
-            overlayed = overlay_mask_on_face(face_image, mask)
-            mask_image = image_to_base64(overlayed)
+            mask_image = binary_mask_to_png( mask,color=CLASS_COLORS[class_name])
+            # mask_image = image_to_base64(overlayed)
             general_viz.append({
                 "class_name": class_name,
                 "image": mask_image
@@ -137,8 +189,8 @@ def generate_visualizations(results):
 
         # Acne-specific overlay
         acne_mask = face_results["specific_acne_binary_mask"]
-        acne_overlay = overlay_mask_on_face(face_image, acne_mask)
-        face_viz["acne"] = image_to_base64(acne_overlay)
+        acne_overlay = binary_mask_to_png(acne_mask,color=CLASS_COLORS['Acne'])
+        face_viz["acne"] = acne_overlay
 
         visualizations[face_direction] = face_viz
 
@@ -177,6 +229,16 @@ def image_to_base64(image):
     image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
     return f"data:image/png;base64,{image_base64}"
 
+def binary_mask_to_png(mask, color=(0, 255, 0, 255)):
+    """
+    Convert a binary mask (numpy array with 0 and 1) to a base64 PNG image.
+    Foreground (1) will be shown in the provided RGBA color, background (0) will be transparent.
+    """
+    mask = (mask > 0).astype(np.uint8)
+    height, width = mask.shape
+    rgba_image = np.zeros((height, width, 4), dtype=np.uint8)
+    rgba_image[mask == 1] = color
+    return image_to_base64(rgba_image)
 
 
 

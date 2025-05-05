@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}    {% endblock title %}</title> 
+       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+       <link rel="preconnect" href="https://fonts.googleapis.com">
+       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+       <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+       <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+      </head>
+
+<style>
+  .navbar .navbar-nav {
+      flex: 1;
+      display: flex;
+      justify-content: space-evenly;
+  }
+  
+  .navbar-brand {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+  }
+  
+  /* Optional: Add more space between items */
+  .navbar-nav .nav-item {
+      margin: 0 10px;
+  }
+  .whitespace {
+      height: 50px; /* Adjust the height as needed */
+    
+  }
+
+  .section{
+    border-radius: 20px;
+  }
+  .green{
+    background-color: #417144F7;
+    color: #FAF9F6; 
+  }
+  .section-heading{
+font-weight: Weight Bold;
+font-size: 64px;
+line-height: 118%;
+letter-spacing: 0%;
+  }
+  .prata{
+    font-family: Prata;
+
+  }
+  .section-text{
+    font-family: Prata;
+font-weight: 400;
+font-size: 20px;
+line-height: 100%;
+letter-spacing: 0%;
+
+  }
+  .section-text-about{
+    font-family: Prata;
+font-weight: 400;
+font-size: 20px;
+line-height: 100%;
+letter-spacing: 0%;
+
+  }
+  .shadow {
+    box-shadow: 0px 4px 4px 0px #00000078;
+  }
+  .section-heading-2{
+    font-family: Italiana;
+font-weight: Weight Bold;
+font-size: 75px;
+line-height: 118%;
+letter-spacing: 0%;
+
+
+  }
+
+  .pink{
+    background: #D5B2A2E5;
+
+  }
+  body {
+  font-family: "Italiana", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  background-color: #FAF9F6 !important;
+}
+.hero-heading {
+  font-weight: 700;
+  font-size: 5rem;
+  color: #FAF9F6;
+}
+.button-cta {
+  background-color: #FAF9F6;
+  border-color: #417144F7;
+  color: #403B3B;
+  font-size: 2rem;
+  width: 224;
+  height: 60;
+  top: 610px;
+  left: 160px;
+  border-radius: 10px;
+  border-width: 1px;
+
+}
+
+ /* CSS for equal-sized images */
+ .testimonial-item {
+    margin-bottom: 20px;
+  }
+  
+  .image-container {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    margin: 0 auto;
+  }
+  
+  .testimonial-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+  
+  /* Make control icons visible against pink background */
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 50%;
+    padding: 10px;
+  }
+  .testimonial-text{
+    font-family: Prata;
+font-weight: 400;
+font-size: 20px;
+line-height: 100%;
+letter-spacing: 0%;
+
+  }
+
+
+  .storytelling-section {
+  position: relative;
+  height: 100vh; /* Adjust as needed */
+}
+
+#story-stage-1, #story-stage-2, #story-stage-3, #story-stage-4, #story-stage-5, #story-stage-6 {
+  height: 100vh; /* Match container height */
+  width: 75%;
+  padding: 3rem 0;
+}
+
+  /* Base styles for storytelling section */
+  .storytelling-section {
+    background-color:  #FAF9F6 !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-us-heading{
+
+    font-family: Italiana;
+    font-weight: 900;
+    font-size: 4rem;
+    color: #FAF9F6;
+    margin-bottom: 2rem;
+  }
+  
+  .section-heading {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  
+  .section-subheading {
+    font-size: 2rem;
+    color: #6c757d;
+    margin-bottom: 2rem;
+  }
+  
+  /* Story stage styling */
+  .story-stage {
+    padding: 3rem 0;
+    position: relative;
+  }
+  
+  .story-image-container {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  height: 500px;
+  position: relative;
+}
+
+.story-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;  /* Changed from 'cover' to 'contain' */
+  object-position: center;
+}
+  
+  
+  .stage-heading {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  
+  .stage-heading:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: #0d6efd;
+  }
+
+  
+  /* Quote styling */
+  .story-quote {
+    font: Prata;
+    background-color: rgba(13, 110, 253, 0.05);
+    border-left: 4px solid #0d6efd;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+  }
+  
+  .story-quote blockquote {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #495057;
+  }
+  
+  /* Fact box styling */
+  .story-fact {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 193, 7, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .fact-icon {
+    font-size: 1.5rem;
+    color: #ffc107;
+    margin-right: 1rem;
+  }
+  
+  .fact-text {
+    font-size: 0.95rem;
+  }
+  
+  /* Recommendation list */
+  .recommendation-list {
+    margin-top: 1.5rem;
+  }
+  
+  .recommendation-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8rem;
+  }
+  
+  .check-icon {
+    color: #198754;
+    font-weight: bold;
+    margin-right: 0.8rem;
+    font-size: 1.2rem;
+  }
+  
+  /* Results metrics */
+  .results-metrics {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 2rem;
+  }
+  
+  .metric {
+    text-align: center;
+  }
+  
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0d6efd;
+  }
+  
+  .metric-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  
+  /* Call to action styling */
+  .lead {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  @media (max-width: 767.98px) {
+    .story-stage {
+      padding: 2rem 0;
+    }
+    
+    .story-content {
+      margin-top: 1.5rem;
+    }
+    
+    .results-metrics {
+      flex-direction: column;
+    }
+    
+    .metric {
+      margin-bottom: 1.5rem;
+    }
+    
+    .section-heading {
+      font-size: 2rem;
+    }
+  }
+  
+</style>
+<body >
+    {% block body %}
+        
+    {% endblock body %}
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+
+</html>

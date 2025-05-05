@@ -1,16 +1,633 @@
-{% for angle, res in visualizations.items %}
-    <h2>Angle: {{ angle }}</h2>
+{% extends 'base.html' %}
+
+{% block title %}
+    Results
+{% endblock title %}
+
+{% block body %}
+    <style>
+        .face-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        .face-image, .mask-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        /* Keep masks always visible but with zero opacity by default */
+        .mask-overlay {
+            opacity: 0;
+            pointer-events: none;
+            /* Make sure masks have the same z-index */
+            z-index: 10;
+        }
+        .face-image {
+            z-index: 1; /* Lower z-index than masks */
+        }
+        .angle-btn.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .mask-btn.active {
+            background-color: #198754;
+            color: white;
+        }
+    </style>
     
-    <h3>Original Face:</h3>
-    <img src="{{ res.face }}" alt="Face Image"><br>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Face Mask Overlay Viewer</h1>
+        
+        <!-- Angle selector buttons -->
+        <div class="d-flex justify-content-center mb-3">
+            <div class="btn-group" role="group" id="angleButtons">
+                {% for angle, res in visualizations.items %}
+                    <button type="button" class="btn btn-outline-primary angle-btn" data-angle="{{ angle }}">
+                        {{ angle|title }} View
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
 
-    <h3>General Diseases:</h3>
-    {% for r in res.general_diseases %}
-        <strong>Class name:</strong> {{ r.class_name }}<br>
-        <img src="{{ r.image }}" alt="Disease Mask"><br>
-    {% endfor %}
+        <!-- Main content area -->
+        <div class="row">
+            <!-- Face and overlay display -->
+            <div class="col-lg-8 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="face-container" id="faceContainer">
+                            {% for angle, res in visualizations.items %}
+                                <!-- All face images are hidden by default except the first one -->
+                                <img src="{{ res.face }}" class="face-image" id="face-{{ angle }}" 
+                                     alt="{{ angle }} face view" style="opacity: 0;">
+                                
+                                <!-- General disease masks - all present but opacity 0 -->
+                                {% for disease in res.general_diseases %}
+                                    <img src="{{ disease.image }}" class="mask-overlay" 
+                                         id="mask-{{ angle }}-disease-{{ forloop.counter0 }}" 
+                                         alt="{{ disease.class_name }}">
+                                {% endfor %}
+                                
+                                <!-- Acne mask - present but opacity 0 -->
+                                <img src="{{ res.acne }}" class="mask-overlay" id="mask-{{ angle }}-acne" alt="Acne mask">
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Mask Controls</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Disease mask buttons -->
+                        <h6>Disease Masks</h6>
+                        <div id="diseaseMaskButtons" class="mb-3">
+                            <!-- Will be populated dynamically by JavaScript -->
+                        </div>
+                        
+                        <!-- Acne mask button -->
+                        <h6>Acne Mask</h6>
+                        <button type="button" class="btn btn-outline-success mb-3" id="acneMaskButton">
+                            Toggle Acne Mask
+                        </button>
+                        
+                        <!-- Clear button -->
+                        <button type="button" class="btn btn-outline-danger mb-3" id="clearMasksButton">
+                            Clear All Masks
+                        </button>
+                        
+                        <!-- Opacity control -->
+                        <div class="mb-3">
+                            <label for="opacityRange" class="form-label">Mask Opacity: <span id="opacityValue">70%</span></label>
+                            <input type="range" class="form-range" id="opacityRange" min="0" max="1" step="0.05" value="0.7">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+<!-- Add this HTML section to your template, right after the closing </div> of your existing container -->
 
-    <h3>Acne Mask:</h3>
-    <img src="{{ res.acne }}" alt="Acne Mask"><br>
-    <hr>
-{% endfor %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Medical Skin Condition Chatbot</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chat-container" id="chatContainer" style="height: 300px; overflow-y: auto;">
+                        <div class="message-list" id="messageList">
+                            <!-- System welcome message -->
+                            <div class="d-flex mb-3">
+                                <div class="avatar me-2">
+                                    <div class="rounded-circle bg-primary d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-robot text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="message-bubble p-3 bg-light rounded">
+                                    <p class="mb-0">Hello! I'm your skin condition assistant. How can I help you today?</p>
+                                </div>
+                            </div>
+                            <!-- Messages will be added here dynamically -->
+                        </div>
+                    </div>
+                    
+                    <!-- Typing indicator -->
+                    <div class="typing-indicator d-none mb-3" id="typingIndicator">
+                        <div class="d-flex">
+                            <div class="avatar me-2">
+                                <div class="rounded-circle bg-primary d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-robot text-white"></i>
+                                </div>
+                            </div>
+                            <div class="message-bubble p-3 bg-light rounded">
+                                <div class="typing-dots">
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Input area -->
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="userInput" placeholder="Type your message here...">
+                        <button class="btn btn-primary" type="button" id="sendButton">
+                            <i class="bi bi-send"></i> Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add these styles in the existing style block or create a new style block -->
+<style>
+    /* Chatbot specific styles */
+    .typing-dots {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .dot {
+        width: 8px;
+        height: 8px;
+        background-color: #aaa;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    
+    .message-bubble {
+        max-width: 80%;
+        word-wrap: break-word;
+    }
+    
+    .user-message {
+        background-color: #e3f2fd;
+        margin-left: auto;
+    }
+    
+    .bot-message {
+        background-color: #f5f5f5;
+    }
+    
+    .chat-container {
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #f9f9f9;
+    }
+</style>
+
+<!-- Add this script tag at the end of your page, right before the closing </body> tag -->
+<script>
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get DOM elements
+        const chatContainer = document.getElementById('chatContainer');
+        const messageList = document.getElementById('messageList');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+        
+        // Setup GSAP animation for typing dots
+        gsap.to('.dot', {
+            scale: 1.5,
+            stagger: 0.2,
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut"
+        });
+        
+        // Function to add user message
+        function addUserMessage(message) {
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'd-flex mb-3 justify-content-end';
+            userMessageDiv.innerHTML = `
+                <div class="message-bubble user-message p-3 rounded">
+                    <p class="mb-0">${escapeHtml(message)}</p>
+                </div>
+            `;
+            messageList.appendChild(userMessageDiv);
+            scrollToBottom();
+            
+            // Initial appear animation
+            gsap.from(userMessageDiv, {
+                opacity: 0,
+                y: 20,
+                duration: 0.3
+            });
+        }
+        
+        // Function to add bot message with typing animation
+        function addBotMessage(message) {
+            // Show typing indicator
+            typingIndicator.classList.remove('d-none');
+            scrollToBottom();
+            
+            // Simulate thinking time
+            const thinkingTime = 1000 + Math.random() * 2000; // 1-3 seconds
+            
+            setTimeout(() => {
+                // Hide typing indicator
+                typingIndicator.classList.add('d-none');
+                
+                // Create bot message container
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'd-flex mb-3';
+                botMessageDiv.innerHTML = `
+                    <div class="avatar me-2">
+                        <div class="rounded-circle bg-primary d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                            <i class="bi bi-robot text-white"></i>
+                        </div>
+                    </div>
+                    <div class="message-bubble bot-message p-3 rounded">
+                        <p class="mb-0" id="currentBotMessage"></p>
+                    </div>
+                `;
+                messageList.appendChild(botMessageDiv);
+                
+                // Get the paragraph element to type into
+                const messageElement = botMessageDiv.querySelector('#currentBotMessage');
+                messageElement.removeAttribute('id'); // Remove the ID to avoid duplicates
+                
+                // Animate appearance
+                gsap.from(botMessageDiv, {
+                    opacity: 0,
+                    y: 20,
+                    duration: 0.3
+                });
+                
+                // Stream in the text
+                streamText(message, messageElement);
+                
+                scrollToBottom();
+            }, thinkingTime);
+        }
+        
+        // Function to stream text like typing
+        function streamText(text, element) {
+            let index = 0;
+            const characters = text.split('');
+            
+            // Clear existing text
+            element.textContent = '';
+            
+            // Create a timeline for character-by-character typing
+            const tl = gsap.timeline();
+            
+            function addNextChar() {
+                if (index < characters.length) {
+                    element.textContent += characters[index];
+                    index++;
+                    scrollToBottom();
+                    
+                    // Random delay between characters for realistic typing effect
+                    const delay = 0.02 + Math.random() * 0.08; // 20-100ms delay
+                    
+                    // Add to timeline
+                    tl.to({}, { duration: delay, onComplete: addNextChar });
+                }
+            }
+            
+            // Start typing
+            addNextChar();
+        }
+        
+        // Escape HTML to prevent XSS
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+        
+        // Scroll chat to bottom
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Function to process the user message and get bot response
+        async function processUserMessage(message) {
+            try {
+                // Show thinking animation while waiting for response
+                typingIndicator.classList.remove('d-none');
+                
+                // Send the message to the API
+                const response = await fetch('/chatv1', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken() // Get Django CSRF token
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        // Add any other data you want to send
+                        context: {
+                            currentAngle: "currentAngle" // Get the current face angle from the main script
+                        }
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                
+                // Add bot response
+                addBotMessage(data.response || "I'm sorry, I couldn't process your request.");
+                
+            } catch (error) {
+                console.error('Error:', error);
+                addBotMessage("Sorry, there was an error processing your request. Please try again later.");
+            } finally {
+                // Hide typing indicator if visible due to error
+                typingIndicator.classList.add('d-none');
+            }
+        }
+        
+        // Get CSRF token from cookies (for Django)
+        function getCsrfToken() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return cookieValue || '';
+        }
+        
+        // Event listeners
+        sendButton.addEventListener('click', handleSendMessage);
+        userInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                handleSendMessage();
+            }
+        });
+        
+        // Handle send message
+        function handleSendMessage() {
+            const message = userInput.value.trim();
+            if (message) {
+                // Clear input
+                userInput.value = '';
+                
+                // Add user message to chat
+                addUserMessage(message);
+                
+                // Process the message and get response
+                processUserMessage(message);
+            }
+        }
+        
+        // Some example responses if you want to test without backend
+        function getMockResponse(message) {
+            const responses = [
+                "I can see some potential signs of acne in the image. Would you like me to highlight the affected areas?",
+                "Based on the current view, I can identify what might be early signs of dermatitis. Should I outline it for you?",
+                "I've analyzed the image and can see some potential skin conditions. You can use the mask overlay buttons to see my analysis.",
+                "Could you tell me more about any symptoms you're experiencing with this skin condition?",
+                "I recommend viewing the condition from different angles. Try using the angle buttons to see all perspectives."
+            ];
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+        
+        // For testing without backend
+        function testResponse(message) {
+            setTimeout(() => {
+                addBotMessage(getMockResponse(message));
+            }, 1000);
+        }
+        
+        // Uncomment this line if you want to use the mock responses instead of real API call
+        // window.processUserMessage = testResponse;
+    });
+</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize variables
+            let currentAngle = null;
+            let currentMask = null;
+            let maskOpacity = 0.7;
+            
+            // Data structure to hold disease names
+            const diseaseNames = {};
+            {% for angle, res in visualizations.items %}
+            diseaseNames['{{ angle }}'] = [
+                {% for disease in res.general_diseases %}
+                    "{{ disease.class_name }}"{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+            {% endfor %}
+            
+            // Function to update disease mask buttons based on selected angle
+            function updateDiseaseMaskButtons(angle) {
+                const buttonContainer = document.getElementById('diseaseMaskButtons');
+                buttonContainer.innerHTML = '';
+                
+                diseaseNames[angle].forEach((name, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'btn btn-outline-success me-2 mb-2 mask-btn';
+                    button.textContent = name;
+                    button.dataset.index = index;
+                    button.addEventListener('click', () => selectDiseaseMask(angle, index));
+                    buttonContainer.appendChild(button);
+                });
+            }
+            
+            // Function to select an angle
+            function selectAngle(angle) {
+                // Deactivate all angle buttons
+                document.querySelectorAll('.angle-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Activate the selected angle button
+                document.querySelector(`.angle-btn[data-angle="${angle}"]`).classList.add('active');
+                
+                // Hide all face images using opacity
+                document.querySelectorAll('.face-image').forEach(img => {
+                    gsap.to(img, { opacity: 0, duration: 0.3 });
+                });
+                
+                // Show the selected face image
+                const faceImage = document.getElementById(`face-${angle}`);
+                gsap.to(faceImage, { 
+                    opacity: 1, 
+                    scale: 1, 
+                    duration: 0.5,
+                    delay: 0.1, // Small delay to ensure smooth transition
+                    ease: "power2.out"
+                });
+                
+                // Clear any active mask
+                clearMasks();
+                
+                // Update disease mask buttons for this angle
+                updateDiseaseMaskButtons(angle);
+                
+                // Update current angle
+                currentAngle = angle;
+            }
+            
+            // Function to select a disease mask
+            function selectDiseaseMask(angle, index) {
+                // Update active state of disease buttons
+                document.querySelectorAll('.mask-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Get the mask element
+                const maskElement = document.getElementById(`mask-${angle}-disease-${index}`);
+                
+                // If same mask is clicked again, clear it
+                if (currentMask === maskElement) {
+                    clearMasks();
+                    return;
+                }
+                
+                // Clear any existing mask
+                clearMasks();
+                
+                // Activate clicked button
+                document.querySelector(`.mask-btn[data-index="${index}"]`).classList.add('active');
+                
+                // Show and animate the mask - use a timeline to ensure animations complete
+                const tl = gsap.timeline();
+                tl.to(maskElement, { 
+                    opacity: maskOpacity, 
+                    duration: 0.5,
+                    overwrite: "auto" // Prevent animation conflicts
+                });
+                
+                // Update current mask
+                currentMask = maskElement;
+            }
+            
+            // Function to toggle acne mask
+            function toggleAcneMask() {
+                const acneMaskButton = document.getElementById('acneMaskButton');
+                const acneMask = document.getElementById(`mask-${currentAngle}-acne`);
+                
+                // If acne mask is active, clear it
+                if (currentMask === acneMask) {
+                    clearMasks();
+                    return;
+                }
+                
+                // Clear any existing mask
+                clearMasks();
+                
+                // Show and animate the acne mask with timeline
+                const tl = gsap.timeline();
+                tl.to(acneMask, { 
+                    opacity: maskOpacity, 
+                    duration: 0.5,
+                    overwrite: "auto"
+                });
+                
+                // Update button state
+                acneMaskButton.classList.add('active');
+                
+                // Update current mask
+                currentMask = acneMask;
+            }
+            
+            // Function to clear all masks
+            function clearMasks() {
+                // Hide all mask overlays using opacity only
+                document.querySelectorAll('.mask-overlay').forEach(mask => {
+                    gsap.to(mask, { 
+                        opacity: 0, 
+                        duration: 0.3,
+                        overwrite: "auto" // Prevent animation conflicts
+                    });
+                });
+                
+                // Deactivate all mask buttons
+                document.querySelectorAll('.mask-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Deactivate acne button
+                document.getElementById('acneMaskButton').classList.remove('active');
+                
+                // Clear current mask
+                currentMask = null;
+            }
+            
+            // Function to update mask opacity
+            function updateOpacity(value) {
+                maskOpacity = value;
+                document.getElementById('opacityValue').textContent = `${Math.round(value * 100)}%`;
+                
+                if (currentMask) {
+                    gsap.to(currentMask, { 
+                        opacity: value, 
+                        duration: 0.3,
+                        overwrite: "auto"
+                    });
+                }
+            }
+            
+            // Set up event listeners
+            document.querySelectorAll('.angle-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    selectAngle(button.dataset.angle);
+                });
+            });
+            
+            document.getElementById('acneMaskButton').addEventListener('click', toggleAcneMask);
+            document.getElementById('clearMasksButton').addEventListener('click', clearMasks);
+            
+            document.getElementById('opacityRange').addEventListener('input', (e) => {
+                updateOpacity(parseFloat(e.target.value));
+            });
+            
+            // Initialize with the first angle
+            const firstAngle = document.querySelector('.angle-btn').dataset.angle;
+            selectAngle(firstAngle);
+
+            // Add this to prevent any animations from being interrupted
+            gsap.config({
+                nullTargetWarn: false,
+                force3D: true
+            });
+        });
+    </script>
+{% endblock body %}
