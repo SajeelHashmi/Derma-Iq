@@ -73,7 +73,8 @@ letter-spacing: 0%;
 }
 
 .pink{
-  background: #D5B2A2E5;
+    background: rgba(255, 187, 155, 0.48);
+  
 
 }
 body {
@@ -91,7 +92,7 @@ color: #FAF9F6;
 background-color: #FAF9F6;
 border-color: #417144F7;
 color: #403B3B;
-font-size: 2rem;
+font-size: 1.5rem;
 width: 224;
 height: 60;
 top: 610px;
@@ -104,6 +105,8 @@ border-width: 1px;
 /* CSS for equal-sized images */
 .testimonial-item {
   margin-bottom: 20px;
+
+  
 }
 
 .image-container {
@@ -423,6 +426,19 @@ font-size: 20px;
 }
 .btn-green:hover{
     background-color: #198754 !important;
+}
+
+.btn-pink{
+  background: rgb(255, 187, 155)  !important;
+
+  color: black!important;
+
+}
+.btn-pink:hover{
+  background-color:rgb(209, 152, 126);
+}
+.hero-title{
+  font-size: 4rem;
 }
 .angle-btn.active {
     background-color: #28462a;

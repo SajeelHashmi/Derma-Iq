@@ -5,6 +5,8 @@
     .dashboard-banner {
         background: #F9DF8F;
         color: black;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+
         ;
     }
 </style>
@@ -13,15 +15,15 @@
     <div class="row justify-content-center mb-5">
         <div class="col-auto">
 
-            <div class="dashboard-banner text-center d-inline-block  px-5 py-1 rounded prata">
-                <p class="display-4 ">Welcome, {{ request.user.first_name|default:request.user.username }}</p>
+            <div class="dashboard-banner text-center   d-inline-block  px-5 py-1 rounded prata">
+                <p class="display-4 pt-4 ">Welcome, {{ request.user.first_name|default:request.user.username }}</p>
                 <p class="lead">Your skin care journey at a glance</p>
             </div>
         </div>
     </div>
 
         <!-- Tips Section with GSAP animations -->
-        <div class="tips-section p-4 shadow-sm mb-5 green section prata">
+        <div class="tips-section p-4 shadow-sm mb-5  section prata">
             <h2 class="section-heading mb-4">Skin Care Tips</h2>
             <div id="tipCarousel" class="carousel slide" data-bs-ride="carousel">
               <div class="carousel-inner">

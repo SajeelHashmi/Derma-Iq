@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}
-    Welcome to the Home Page
+    Derma IQ
 {% endblock title %}
 {% block body %}
 {% load static %}
@@ -10,9 +10,12 @@
       <!-- Left Side: Hero Text + CTA -->
       <div class="col-md-8 px-5">
         <h1 class="mb-4 hero-heading text-wrap">Innovating Skincare for a Healthier Tomorrow </h1>
-        <p class="mb-4 hero-subtext fs-3">At DermaIQ, we use AI to detect facial skin concerns and deliver personalized skincare solutions. Experience smarter, simpler, and more effective skincare—anytime, anywhere.</p>
-        <a href="{% url 'scan' %}" class="btn button-cta">Scan Now</a>
-      </div>
+       <div class="container">
+
+         <p class="mb-4 hero-subtext fs-3">At DermaIQ, we use AI to detect facial skin concerns and deliver personalized skincare solutions. Experience smarter, simpler, and more effective skincare—anytime, anywhere.</p>
+         <a href="{% url 'scan' %}" class="btn button-cta">Scan Now</a>
+        </div>
+        </div>
   
       <!-- Right Side: Hero Image -->
       <div class="col-md-4 hero-image-container">
@@ -28,14 +31,19 @@
   <div class="container p-5 mb-5 section shadow aboutUs "  >
     <div class="row ">
       <div class="col-md-6">
-        <h2 class="mb-4 section-heading">About Us</h2>
+        <h2 class="mb-2 section-heading">About Us</h2>
         <p class="mb-3   section-text-about  ">At DermaIQ, we believe that technology and care go hand in hand in building a healthier, more confident world. We stay at the forefront of AI innovation to deliver skincare solutions that make a real difference in people’s lives today, while shaping the future of personalized skin health. By putting our users at the center of everything we do, we craft experiences that not only meet but exceed expectations. Our goal is to empower individuals with the tools and knowledge to understand their skin better, make informed choices, and feel confident in their own beauty. Through innovation, compassion, and a commitment to excellence, we are redefining skincare — one face at a time.</p>
-      </div>
+        
+          <button class="btn btn-green fs-4 mt-3">
+            About Us
+          </button>
+        </div>
       
       
       <div class="col-md-6">
         <img src="https://media.istockphoto.com/id/1337199661/photo/beautiful-caucasian-woman-applying-cream-on-face.jpg?s=1024x1024&w=is&k=20&c=4ylvSnCfLjEqBwAyB3Ya_AHaknmreeQ2joyw1MTJU8w=" alt="Section Image" class="img-fluid">
       </div>
+
   
 
     </div>
