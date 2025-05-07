@@ -49,6 +49,7 @@ def predict(request):
     if request.user.is_authenticated:
         user = request.user
     else:
+        print(request.user)
         messages.error(request, "Sign Up and begin Scanning.")
         return redirect('signup')
     if request.method == 'POST':
@@ -155,9 +156,11 @@ def view_results(request, result_id):
         messages_qs = Message.objects.filter(chat=chat).order_by('sequence') if chat else []
 
         # Flag to tell frontend whether RAG conversation is initialized
-        rag_initialized = False if len(messages_qs) == 0 else True
+        print(f"messages_qs: {messages_qs}")
         chat_history = [{"sender": m.sender, "content": m.content} for m in messages_qs]
         print(f"history: {chat_history}")
+        print(len(chat_history))
+        rag_initialized = False if len(chat_history) == 0 else True
 
         
         return render(request, 'results.html', {
@@ -218,8 +221,7 @@ def submit_rag_query(request):
         print(f"history: {history}")
 
         # Add new user message
-        user_message = Message.objects.create(chat=chat, sender="user", content=user_query)
-        user_message.save()
+
         history.append({"role": "user", "content": user_query})
         history = json.dumps(history,indent=2)
 
@@ -232,6 +234,10 @@ def submit_rag_query(request):
         }
         ai_response = rag.followup_conversation(initial_res,history,user_query)
 
+        # Save user message after bot has replied   
+        user_message = Message.objects.create(chat=chat, sender="user", content=user_query)
+        user_message.save()
+        
         # Save bot response
         bot_message = Message.objects.create(chat=chat, sender="assistant", content=ai_response)
         bot_message.save()

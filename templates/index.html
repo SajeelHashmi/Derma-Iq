@@ -3,6 +3,8 @@
     Welcome to the Home Page
 {% endblock title %}
 {% block body %}
+{% load static %}
+
 <div class="container  section green  p-5 mb-5" >
     <div class="row align-items-center">
       <!-- Left Side: Hero Text + CTA -->
@@ -14,7 +16,7 @@
   
       <!-- Right Side: Hero Image -->
       <div class="col-md-4 hero-image-container">
-        <img src="https://media.istockphoto.com/id/1462119292/photo/happy-with-her-skincare-routine-woman-in-her-20s-applies-beauty-cream-on-her-face.jpg?s=1024x1024&w=is&k=20&c=G_xmWjxF8z0CYia6PO8cSwaUp1g8eVG_jPghhOVV6cE=" alt="Hero Image" class="img-fluid">
+        <img src="{% static 'assets\hero-landing.png' %}" alt="Hero Image" class="img-fluid">
       </div>
     </div>
   </div>
@@ -270,7 +272,7 @@
     // Then Subtext
     // Then the CTA button
     heroTimeline.fromTo(".hero-heading", { opacity: 0 ,y:-100 }, {y: 0,opacity: 1, duration: 0.25 });
-    heroTimeline.fromTo(".hero-image-container", { opacity: 0 ,rotation:180,x:500 }, {x: 0,opacity: 1, rotation:0, duration: 0.5 });  
+    heroTimeline.fromTo(".hero-image-container", { opacity: 0  }, {x: 0,opacity: 1, rotation:0, duration: 0.5 });  
     heroTimeline.fromTo(".hero-subtext", { opacity: 0 ,x:-500 }, {x: 0,opacity: 1, duration: 0.25 });
     heroTimeline.fromTo(".button-cta", { opacity: 0 ,y:100 }, {y: 0,opacity: 1, duration: 0.25 });
     let ctaPulseTween = gsap.to(".button-cta", { scale: 1.10, duration: 0.25, repeat: -1, yoyo: true });
@@ -304,13 +306,13 @@ introTimeline.from(".main-heading-story", {
   y: -200,
   x: 200,
   opacity: 0,
-  duration: 1,
+  duration: 0.5,
   ease: "power4.out"
 })
 .from(".main-subheading-story", {
   x: 300,
   opacity: 0,
-  duration: 1,
+  duration: 0.5,
   ease: "power4.out"
 }, "-=0.5"); // overlaps a little for smoother flow
 

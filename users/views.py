@@ -6,6 +6,7 @@ from django.contrib.auth import logout
 from django.core.validators import EmailValidator
 from django.conf import settings
 from django.contrib import messages
+from predictor.models import Result
 
 """Basic auth complete add stripe subscription to register view and check subscription on login view"""
 
@@ -17,6 +18,8 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                print("user logged in successfully")
+
                 return redirect("home")
             else:
                 messages.success(request=request,message="incorrect user name or password")
@@ -37,14 +40,12 @@ def sign_up(request):
 
         # print("method post")
         username = request.POST["username"]
-        email = request.POST["email"]
         pass1 = request.POST["passowrd"]
         pass2 = request.POST["confirm_password"]
 
-        normalized_email = email.lower()   
         # validate the data in the form
         if pass1==pass2:
-            user = User.objects.create_user(username=username, password=pass1,email=normalized_email)
+            user = User.objects.create_user(username=username, password=pass1)
             user.save()
             login(request,user)
             return redirect("home")
@@ -56,10 +57,8 @@ def sign_up(request):
 
 def home(request):
     if request.user.is_authenticated:
-        # This will show the users previous scans and other data
-        # A basic dashboard with new scan button and below that the previous scans
-        # also somewhere in between tips and tricks for better face health
-        
-        return render(request, 'home.html', {})
+        results = Result.objects.filter(user=request.user).order_by('-created_at')
+
+        return render(request, 'home.html', {"results": results})
     else:
         return redirect('login')

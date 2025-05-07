@@ -1,5 +1,146 @@
 {% extends 'base.html' %}
 {% block title %}Dashboard{% endblock title %}
 {% block body %}
-dashboard
+<style>
+    .dashboard-banner {
+        background: #F9DF8F;
+        color: black;
+        ;
+    }
+</style>
+<div class="container py-5">
+    <!-- Welcome Banner -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-auto">
+
+            <div class="dashboard-banner text-center d-inline-block  px-5 py-1 rounded prata">
+                <p class="display-4 ">Welcome, {{ request.user.first_name|default:request.user.username }}</p>
+                <p class="lead">Your skin care journey at a glance</p>
+            </div>
+        </div>
+    </div>
+
+        <!-- Tips Section with GSAP animations -->
+        <div class="tips-section p-4 shadow-sm mb-5 green section prata">
+            <h2 class="section-heading mb-4">Skin Care Tips</h2>
+            <div id="tipCarousel" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="tip-item p-4 text-black rounded pink mb-3">
+                      <h5 class="fs-2">Daily Sunscreen</h5>
+                      <p class="fs-5">Apply SPF 30+ sunscreen daily, even on cloudy days to protect against UV damage.</p>
+                    </div>
+                  </div>
+              </div>
+          
+              <!-- Optional controls -->
+              <!-- <button class="carousel-control-prev" type="button" data-bs-target="#tipCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#tipCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+              </button> -->
+            </div>
+          </div>
+          
+        
+    <!-- Results Section -->
+    <div class="mb-5">
+        <h2 class="section-heading mb-4 ">Your Previous Results</h2>
+        
+
+        
+        <!-- Results Grid -->
+        <div class="row row-cols-1 row-cols-md-3 g-4 prata">
+            {% if results %}
+                {% for result in results %}
+                    <div class="col">
+                        <div class="card h-100 result-card">
+                            {% if result.face_front %}
+                                <img src="{{ result.face_front }}" class="card-img-top" alt="Skin analysis result">
+                            {% else %}
+                                <div class="card-img-top bg-secondary text-white d-flex justify-content-center align-items-center" style="height: 180px;">
+                                    <p class="mb-0">No image</p>
+                                </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <p class="card-text">{{ result.created_at|date:"F j, Y" }}</p>
+                                <a href="{% url 'view_results' result.id %}" class="btn btn-green ">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <p class="lead">You haven't performed any skin analyses yet.</p>
+                    <a href="#" class="btn btn-primary">Start Your First Scan</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+
+</div>
+
+<!-- GSAP Animation Script -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const tipsData = [
+            { title: "Daily Sunscreen", description: "Apply SPF 30+ sunscreen daily, even on cloudy days to protect against UV damage." },
+            { title: "Hydration Matters", description: "Drink at least 8 glasses of water daily to maintain skin elasticity and clarity." },
+            { title: "Consistent Routine", description: "Maintain a regular cleansing, toning, and moisturizing routine." },
+            { title: "Healthy Diet", description: "Eat antioxidant-rich foods like berries, leafy greens, and nuts for glowing skin." },
+            { title: "Proper Sleep", description: "Get at least 7-8 hours of sleep to allow your skin to repair and rejuvenate." },
+            { title: "Avoid Touching Face", description: "Keep hands off your face to reduce the spread of bacteria and prevent breakouts." },
+            { title: "Gentle Exfoliation", description: "Exfoliate 1-2 times a week to remove dead skin cells and unclog pores." },
+            { title: "Moisturize Daily", description: "Use a suitable moisturizer for your skin type to keep it hydrated and smooth." },
+            { title: "Avoid Harsh Products", description: "Use products suitable for your skin type to avoid irritation and dryness." },
+            { title: "Stay Active", description: "Exercise regularly to improve circulation and achieve a natural glow." }
+        ];
+    
+        const carouselInner = document.querySelector('#tipCarousel .carousel-inner');
+    
+        tipsData.slice(1).forEach((tip) => {
+    const item = document.createElement('div');
+    item.className = 'carousel-item';
+    item.innerHTML = `
+        <div class="tip-item p-4 text-black rounded pink mb-3">
+            <h5 class="fs-2">${tip.title}</h5>
+            <p class="fs-5">${tip.description}</p>
+        </div>
+    `;
+    carouselInner.appendChild(item);
+});
+        // Optional: autoplay with interval
+        new bootstrap.Carousel('#tipCarousel', {
+            interval: 4000,
+            ride: 'carousel'
+        });
+    });
+    </script>
+    
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate dashboard banner
+        gsap.from('.dashboard-banner', { 
+            duration: 1,
+            y: -50,
+            opacity: 0,
+            ease: 'power3.out'
+        });
+        
+        // Animate result cards
+        gsap.from('.result-card', { 
+            duration: 0.6,
+            scale: 0.9,
+            opacity: 0,
+            stagger: 0.2,
+            delay: 0.3,
+            ease: 'back.out(1.7)'
+        });
+        
+
+    });
+</script>
 {% endblock body %}

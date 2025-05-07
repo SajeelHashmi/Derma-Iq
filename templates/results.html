@@ -4,50 +4,15 @@
     Results
 {% endblock title %}
 
-{% block body %}
-    <style>
-        .face-container {
-            position: relative;
-            width: 400px;
-            height: 400px;
-            margin: 0 auto;
-        }
-        .face-image, .mask-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        /* Keep masks always visible but with zero opacity by default */
-        .mask-overlay {
-            opacity: 0;
-            pointer-events: none;
-            /* Make sure masks have the same z-index */
-            z-index: 10;
-        }
-        .face-image {
-            z-index: 1; /* Lower z-index than masks */
-        }
-        .angle-btn.active {
-            background-color: #0d6efd;
-            color: white;
-        }
-        .mask-btn.active {
-            background-color: #198754;
-            color: white;
-        }
-    </style>
-    
+{% block body %}    
     <div class="container mt-4">
-        <h1 class="text-center mb-4">Face Mask Overlay Viewer</h1>
+        <h1 class="text-center mb-4">Face Scan Report</h1>
         
         <!-- Angle selector buttons -->
-        <div class="d-flex justify-content-center mb-3">
+        <div class="d-flex justify-content-center mb-3 prata">
             <div class="btn-group" role="group" id="angleButtons">
                 {% for angle, res in visualizations.items %}
-                    <button type="button" class="btn btn-outline-primary angle-btn" data-angle="{{ angle }}">
+                    <button type="button" class="btn  angle-btn" data-angle="{{ angle }}">
                         {{ angle|title }} View
                     </button>
                 {% endfor %}
@@ -60,7 +25,7 @@
             <div class="col-lg-8 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <div class="face-container" id="faceContainer">
+                        <div class="face-container " id="faceContainer">
                             {% for angle, res in visualizations.items %}
                                 <!-- All face images are hidden by default except the first one -->
                                 <img src="{{ res.face }}" class="face-image" id="face-{{ angle }}" 
@@ -82,7 +47,7 @@
             </div>
             
             <!-- Controls -->
-            <div class="col-lg-4 mb-4">
+            <div class="col-lg-4 mb-4 prata">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">Mask Controls</h5>
@@ -116,16 +81,16 @@
         </div>
     </div>
  
-<!-- Add this HTML section to your template, right after the closing </div> of your existing container -->
 
-<div class="container mt-5">
+      
+<div class="container mt-5 ">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Medical Skin Condition Chatbot</h5>
+                <div class="card-header green text-white">
+                    <h5 class="mb-0 fs-1 text-center">Talk to Alex</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body prata ">
                     <div class="chat-container" id="chatContainer" style="height: 300px; overflow-y: auto;">
                         <div class="message-list" id="messageList">
                             <!-- Messages will be added here dynamically -->
@@ -136,9 +101,9 @@
                     <div class="typing-indicator d-none mb-3" id="typingIndicator">
                         <div class="d-flex">
                             <div class="avatar me-2">
-                                <div class="rounded-circle bg-primary d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-                                    <i class="bi bi-robot text-white"></i>
-                                </div>
+                                <div class="rounded-circle pink d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                                    <i class="fa-solid fa-robot"></i>
+                                                                </div>
                             </div>
                             <div class="message-bubble p-3 bg-light rounded">
                                 <div class="typing-dots">
@@ -153,7 +118,7 @@
                     <!-- Input area -->
                     <div class="input-group">
                         <input type="text" class="form-control" id="userInput" placeholder="Type your message here...">
-                        <button class="btn btn-primary" type="button" id="sendButton">
+                        <button class="btn green text-white" type="button" id="sendButton">
                             <i class="bi bi-send"></i> Send
                         </button>
                     </div>
@@ -163,6 +128,15 @@
     </div>
 </div>
 
+
+<div class="container my-5 py-5">
+    <div class="d-flex justify-content-center gap-5">
+      <button class="btn btn-green px-3 fs-4">Make Scan Public</button>
+      <button class="btn btn-green px-3 fs-4">Delete Scan Report</button>
+    </div>
+  </div>
+  
+{% csrf_token %}
 <!-- Add these styles in the existing style block or create a new style block -->
 <style>
     /* Chatbot specific styles */
@@ -203,6 +177,7 @@
 </style>
 
 <!-- Add this script tag at the end of your page, right before the closing </body> tag -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
     // Wait for DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', function() {
@@ -212,7 +187,7 @@
         const userInput = document.getElementById('userInput');
         const sendButton = document.getElementById('sendButton');
         const typingIndicator = document.getElementById('typingIndicator');
-        const ragInitialized =" {{rag_initialized}} " =="True" ? true : false; // Check if RAG is initialized
+        const ragInitialized ="{{rag_initialized}}" == "True" ? true : false; // Check if RAG is initialized
         const resultId = "{{resultId}}"
         
         console.log("Result ID:", resultId);
@@ -222,7 +197,7 @@
             // Load existing chat history
             let chatHistory =[]
             {% for message in chat_history %}
-                chatHistory.push({ sender: "{{ message.sender }}", content: "{{ message.content }}" });
+                chatHistory.push({ sender: "{{ message.sender }}", content: `{{ message.content }}` });
             {% endfor %}
             console.log("Chat History:", chatHistory);
 
@@ -284,7 +259,7 @@ async function processUserMessage(message) {
         typingIndicator.classList.remove('d-none');
         
         // Send the message to the correct API endpoint
-        const response = await fetch('/submitRagQuery/', {
+        const response = await fetch('/predict/submitRagQuery/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -325,7 +300,7 @@ async function processUserMessage(message) {
             userMessageDiv.className = 'd-flex mb-3 justify-content-end';
             userMessageDiv.innerHTML = `
                 <div class="message-bubble user-message p-3 rounded">
-                    <p class="mb-0">${escapeHtml(message)}</p>
+                    <p class="mb-0">${message}</p>
                 </div>
             `;
             messageList.appendChild(userMessageDiv);
@@ -341,16 +316,18 @@ async function processUserMessage(message) {
         
         function addOldBotMessage(message) {
             console.log("Adding old bot message:", message);
+            message = marked.parse(message);
+
             const botMessageDiv = document.createElement('div');
             botMessageDiv.className = 'd-flex mb-3';
             botMessageDiv.innerHTML = `
                 <div class="avatar me-2">
-                    <div class="rounded-circle bg-primary d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-                        <i class="bi bi-robot text-white"></i>
+                    <div class="rounded-circle pink d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                    <i class="fa-solid fa-robot"></i>
                     </div>
                 </div>
                 <div class="message-bubble bot-message p-3 rounded">
-                    <p class="mb-0">${escapeHtml(message)}</p>
+                    <p class="mb-0">${message}</p>
                 </div>
             `;
             messageList.appendChild(botMessageDiv);
@@ -361,11 +338,13 @@ async function processUserMessage(message) {
         function addBotMessage(message) {
             // Show typing indicator
             console.log("Adding bot message:", message);
+            message = marked.parse(message);
+
             typingIndicator.classList.remove('d-none');
             scrollToBottom();
             
             // Simulate thinking time
-            const thinkingTime = 1000 + Math.random() * 2000; // 1-3 seconds
+            // const thinkingTime = 1000 + Math.random() * 2000; // 1-3 seconds
             
             setTimeout(() => {
                 // Hide typing indicator
@@ -377,7 +356,7 @@ async function processUserMessage(message) {
                 botMessageDiv.innerHTML = `
                     <div class="avatar me-2">
                         <div class="rounded-circle bg-primary d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
-                            <i class="bi bi-robot text-white"></i>
+                           <i class="fa-solid fa-robot"></i>
                         </div>
                     </div>
                     <div class="message-bubble bot-message p-3 rounded">
@@ -406,32 +385,87 @@ async function processUserMessage(message) {
         
         // Function to stream text like typing
         function streamText(text, element) {
-            let index = 0;
-            const characters = text.split('');
-            
-            // Clear existing text
-            element.textContent = '';
-            
-            // Create a timeline for character-by-character typing
-            const tl = gsap.timeline();
-            
-            function addNextChar() {
-                if (index < characters.length) {
-                    element.textContent += characters[index];
-                    index++;
-                    scrollToBottom();
-                    
-                    // Random delay between characters for realistic typing effect
-                    const delay = 0.02 + Math.random() * 0.08; // 20-100ms delay
-                    
-                    // Add to timeline
-                    tl.to({}, { duration: delay, onComplete: addNextChar });
+    // Create a temporary container to parse the HTML content
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = text;
+    
+    // Clear existing content
+    element.innerHTML = '';
+    
+    // Create a timeline for the typing animation
+    const tl = gsap.timeline();
+    
+    // Recursively process and stream nodes
+    function processNode(sourceNode, targetParent) {
+        // Array to track all text nodes that need character-by-character streaming
+        const streamingQueue = [];
+        
+        // First, build the DOM structure by cloning all non-text nodes
+        function buildStructure(sNode, tParent) {
+            Array.from(sNode.childNodes).forEach(childNode => {
+                if (childNode.nodeType === Node.TEXT_NODE) {
+                    // For text nodes, create an empty text node and queue the content for streaming
+                    if (childNode.textContent.trim() !== '') {
+                        const newTextNode = document.createTextNode('');
+                        tParent.appendChild(newTextNode);
+                        streamingQueue.push({
+                            node: newTextNode,
+                            text: childNode.textContent
+                        });
+                    }
+                } else if (childNode.nodeType === Node.ELEMENT_NODE) {
+                    // For element nodes, clone without content and recurse
+                    const newElement = childNode.cloneNode(false);
+                    tParent.appendChild(newElement);
+                    buildStructure(childNode, newElement);
                 }
-            }
-            
-            // Start typing
-            addNextChar();
+            });
         }
+        
+        // Build the initial DOM structure
+        buildStructure(sourceNode, targetParent);
+        
+        // Return the queue of text content to be streamed
+        return streamingQueue;
+    }
+    
+    // Process the entire content and get the streaming queue
+    const streamingQueue = processNode(tempDiv, element);
+    
+    // Now stream all text content character by character
+    let currentQueueIndex = 0;
+    let currentCharIndex = 0;
+    
+    function streamNextChar() {
+        // If we've processed all text chunks, we're done
+        if (currentQueueIndex >= streamingQueue.length) {
+            return;
+        }
+        
+        const current = streamingQueue[currentQueueIndex];
+        
+        if (currentCharIndex < current.text.length) {
+            // Add the next character
+            current.node.textContent += current.text[currentCharIndex];
+            currentCharIndex++;
+            scrollToBottom();
+            
+            // Random delay for realistic typing
+            const delay = 0.0002 + Math.random() * 0.0004;
+            
+            // Schedule next character
+            tl.to({}, { duration: delay, onComplete: streamNextChar });
+        } else {
+            // Move to the next text chunk
+            currentQueueIndex++;
+            currentCharIndex = 0;
+            streamNextChar();
+        }
+    }
+    
+    // Start streaming
+    streamNextChar();
+}
         
         // Escape HTML to prevent XSS
         function escapeHtml(unsafe) {
@@ -451,11 +485,9 @@ async function processUserMessage(message) {
         
         // Get CSRF token from cookies (for Django)
         function getCsrfToken() {
-            const cookieValue = document.cookie
-                .split('; ')
-                .find(row => row.startsWith('csrftoken='))
-                ?.split('=')[1];
-            return cookieValue || '';
+            const csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            console.log("CSRF Token:", csrf_token);
+            return csrf_token;
         }
         
         // Event listeners

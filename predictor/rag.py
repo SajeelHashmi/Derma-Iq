@@ -7,7 +7,8 @@ from langchain_google_genai  import ChatGoogleGenerativeAI
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.prompts import PromptTemplate
 from .vector_store import VectorStore
-
+# Preinitialize the vector store to avoid delay in the first request
+VectorStore()
 
 load_dotenv()
 
@@ -43,14 +44,19 @@ Based on this, introduce yourself to the user, briefly explain what you observed
         print("Starting conversation with the model...")
         context = self._format_context(result_json)
         initial_prompt = self._build_initial_prompt(context)
-        llm = self.get_chat_model()
+        initial_prompt = [HumanMessage(content=initial_prompt)]
+        llm = self._get_chat_model()
         response = llm(initial_prompt)
+        print(response)
         return response.content
     
     def _search_vector_store(self, query):
-        return self.vector_store.search(query, namespace="general")
-    
+        print("Searching vector store...")
+        res =  self.vector_store.search(query, namespace="general")
+        print("Search results: ", res)
+        return res
     def _build_conversation_prompt(self, initail_res,history,query):
+        print("Building conversation prompt...")
         prompt = PromptTemplate(
             template=""""
         You are a compassionate and knowledgeable dermatologist assistant.
@@ -68,6 +74,7 @@ You can use the following context to answer the user's question:
         """,
         input_variables=["initail_res", "history", "query","context"],
         )
+        
         context = self._search_vector_store(query)
         prompt = prompt.format(
             initail_res=initail_res,
@@ -77,9 +84,18 @@ You can use the following context to answer the user's question:
         )
         return prompt
     def followup_conversation(self,initail_res, history,query):
-        initail_res = self._format_context(initail_res)
-        prompt =self._build_conversation_prompt(initail_res,history,query)
+        try:
+            print("Continuing conversation with the model...")
+            initail_res = self._format_context(initail_res)
+            print("Initial response: ", initail_res)
+            prompt =self._build_conversation_prompt(initail_res,history,query)
+            print("Prompt: ", prompt)
+            prompt = [HumanMessage(content=prompt)]
 
-        llm = self.get_chat_model()
-        llm_response = llm(prompt)
-        return llm_response.content
+            llm = self._get_chat_model()
+            llm_response = llm(prompt)
+            print("Followup conversation response: ", llm_response.content)
+            return llm_response.content
+        except Exception as e:
+            print("Error in followup conversation: ", e)
+            raise e
