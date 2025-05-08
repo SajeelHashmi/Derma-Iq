@@ -7,63 +7,14 @@
 
 
 <style>
-    .about-us-hero {
-        padding: 3rem 0;
-        margin-bottom: 2rem;
-    }
-    
-    .hero-image-container {
-        max-height: 400px; /* Adjustable max-height constraint */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: visible; /* Important: allows image to extend beyond container if needed */
-    }
-    
-    .hero-image-container.text-start {
-    justify-content: flex-start;
-}
 
-.hero-image-container.text-end {
-    justify-content: flex-end;
-}
-
-    .hero-image-container img {
-        max-width: 100%;
-        max-height: 400px; /* Match container max-height */
-        height: auto;
-        width: auto;
-        object-fit: contain; /* Ensures the entire image is visible */
-    }
-    
-    .hero-title {
-        font-size: 4rem;
-        font-weight: bold;
-    }
-    .philosophy-section h1{
-        color: #467549;
-        font-family: Italiana;
-font-weight: Weight Bold;
-font-size: 64px;
-line-height: 118%;
-letter-spacing: 0%;
-
-
-    }
-    .philosophy-section p{
-        font-family: Prata;
-font-weight: 400;
-font-size: 30px;
-line-height: 100%;
-letter-spacing: 0%;
-
-    }
     </style>
-<div class="container-fluid pink py-5 mb-5 about-us-hero px-0">
+<div class="container-fluid pink py-5 mb-2 mb-md-5
+ about-us-hero px-0">
     <div class="row align-items-center g-0">
       
       <!-- Left Image: Flush to left -->
-      <div class="col-md-4 hero-image-container text-start ps-0">
+      <div class="col-md-4 hero-image-container text-start ps-0 d-none d-md-block">
         <img src="{% static 'assets/about-heading-1.png' %}" alt="Hero Image" class="img-fluid ps-0">
       </div>
       
@@ -73,16 +24,16 @@ letter-spacing: 0%;
       </div>
       
       <!-- Right Image: Flush to right -->
-      <div class="col-md-4 hero-image-container text-end pe-0">
+      <div class="col-md-4 hero-image-container text-end pe-0 d-none d-md-block">
         <img src="{% static 'assets/about-heading.png' %}" alt="Hero Image" class="img-fluid">
       </div>
   
     </div>
   </div>
   
-<div class="container text-center p-5 my-5 about-us-text-1 ">
+<div class="container text-center  p-1 p-md-5 my-1 my-md-5 about-us-text-1 ">
     <div class="col-12">
-        <h1 class="prata">
+        <h1 class="prata text-aboutus">
             We stay at the forefront of AI innovation to deliver skincare solutions that make a real difference in people's lives today, while shaping the future of personalized skin health.
         </h1>
     </div>
@@ -91,7 +42,7 @@ letter-spacing: 0%;
 
 <div class="container section philosophy-section my-5 py-3">
     <div class="row my-3 mx-1" >
-        <div class="col-9">
+        <div class="col-md-9 col-12">
             <h1>
                 Our Philosophy
             </h1>
@@ -100,40 +51,42 @@ letter-spacing: 0%;
 We're not just transforming skin health for today — we're shaping the future of personalized wellness, confidence, and care.
             </p>
         </div>
-        <div class="col-3">
+        <div class="col-md-3 d-none d-md-block">
             <img src="{% static 'assets/about-us-philosophy.jpg' %}" alt="Hero Image" class="img-fluid rounded-4">
         </div>
     </div>
 </div>
 
 <div class="container section core-val">
-    <h2 class="text-center mb-5 section-heading-2 animate-heading">✨Our Core Values✨</h2>
-    <p class="section-text fs-3 text-center mb-5 animate-intro">
+    <h2 class="text-center mb-2 mb-md-5
+ section-heading-2 animate-heading">✨Our Core Values✨</h2>
+    <p class="section-text   text-center mb-2 mb-md-5
+ animate-intro">
         At <strong>DermaIQ</strong>, we are committed to using the power of innovation to transform skincare experiences, guided by three core values that inspire everything we do:
     </p>
     <div class="container mt-5">
         <div class="row justify-content-around text-center">
-          <div class="col-3 green section py-3 prata animate-value" data-delay="0">
-            <h3 class="text-center prata fw-bold mb-3 animate-value-title">
+          <div class="col-md-3 col-12 mb-3 green section py-3 prata animate-value" data-delay="0">
+            <h3 class="text-center prata fw-bold mb-3  animate-value-title">
                 Innovation
             </h3>
-            <p class="text-center prata fs-4 px-4 animate-value-text">
+            <p class="text-center prata fs-md-4 px-4 animate-value-text">
                 We lead the future of skincare by embracing cutting-edge AI and smart technologies to deliver personalized, meaningful solutions for every individual
             </p>
           </div>
-          <div class="col-3 green section py-3 px-4 animate-value" data-delay="0.2">
+          <div class="col-md-3 col-12 mb-3 green section py-3 px-4 animate-value" data-delay="0.2">
             <h3 class="text-center prata fw-bold mb-3 animate-value-title">
                 Excellence
             </h3>
-            <p class="text-center prata fs-4 px-4 animate-value-text">
+            <p class="text-center prata fs-md-4 px-4 animate-value-text">
                 We hold ourselves to the highest standards, ensuring that every scan, every recommendation, and every user experience exceeds expectations with precision and care
             </p>
           </div>
-          <div class="col-3 green section py-3 px-4 animate-value" data-delay="0.4">
+          <div class="col-md-3 col-12 mb-3 green section py-3 px-4 animate-value" data-delay="0.4">
             <h3 class="text-center prata fw-bold mb-3 animate-value-title">
                 Integrity
             </h3>
-            <p class="text-center prata fs-4 px-4 animate-value-text">
+            <p class="text-center prata fs-md-4 px-4 animate-value-text">
                 We lead the future of skincare by embracing cutting-edge AI and smart technologies to deliver personalized, meaningful solutions for every individual
             </p>
           </div>
@@ -144,6 +97,8 @@ We're not just transforming skin health for today — we're shaping the future o
 
 <script>
     gsap.registerPlugin(ScrollTrigger);
+
+
 gsap.from(".about-us-text-1 ", {
   scrollTrigger: {
     trigger: ".about-us-text-1",
@@ -153,60 +108,60 @@ gsap.from(".about-us-text-1 ", {
     toggleActions: "restart reverse restart reverse",
 
   },
-  x: -2000,
+  x: -500,
   duration: 1,
 });
-
 gsap.from(".philosophy-section ", {
-  scrollTrigger: {
-    trigger: ".philosophy-section",
-    start: "top 70%",
-    end: "bottom 20%",
-    // markers: true,
-    toggleActions: "restart reverse restart reverse",
-
-  },
-  x: 2000,
-  opacity: 0,
-  duration: 1,
-});
-
-
-    // Create main timeline
-    const valuesTL = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".core-val",
-        start: "top 75%",
-        // markers: true, // Remove in production
-        toggleActions: "restart reverse restart reverse"
-      }
-    });
-    
-    // Add animations to timeline
-    valuesTL
-      // Heading animation with sparkle effect
-      .to(".animate-heading", {
-        opacity: 1,
-        y: 0,
+        scrollTrigger: {
+            trigger: ".philosophy-section",
+            start: "top 70%",
+            end: "bottom 20%",
+            // markers: true,
+            toggleActions: "restart reverse restart reverse",
+            
+        },
+        x: 500,
+        opacity: 0,
         duration: 1,
-        ease: "back.out(1.7)"
-      })
-      // Text intro animation
-      .to(".animate-intro", {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: "power2.out"
-      }, "-=0.5")
-      // Core value cards staggered entry
-      .to(".animate-value", {
-        opacity: 1,
-        scale: 1,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: "elastic.out(1, 0.5)",
-        onComplete: animateShine
-      }, "-=0.3");
+    });
+
+    
+
+    
+    
+    // Create main timeline
+if (window.innerWidth >= 768) {
+  const valuesTL = gsap.timeline({
+    scrollTrigger: {
+      trigger: ".core-val",
+      start: "top 75%",
+      toggleActions: "restart reverse restart reverse"
+    }
+  });
+
+  // Add animations to timeline
+  valuesTL
+    .from(".animate-heading", {
+      opacity: 0,
+      y: 50,
+      duration: 1,
+      ease: "back.out(1.7)"
+    })
+    .from(".animate-intro", {
+      opacity: 0,
+      y: 30,
+      duration: 0.8,
+      ease: "power2.out"
+    }, "-=0.5")
+    .from(".animate-value", {
+      opacity: 0,
+      scale: 0.8,
+      duration: 0.8,
+      stagger: 0.2,
+      ease: "elastic.out(1, 0.5)",
+      onComplete: animateShine
+    }, "-=0.3");
+}
 
     // Function to animate the shine effect on cards  
     function animateShine() {
@@ -214,61 +169,63 @@ gsap.from(".philosophy-section ", {
         stagger: 0.3,
         duration: 1.5,
         onStart: function() {
-          const index = gsap.utils.toArray(".animate-value").indexOf(this.targets()[0]);
-          gsap.to(this.targets()[0], {
-            onStart: function() {
-              gsap.to(this.targets()[0].querySelector("h3"), {
-                color: "#116611",
-                duration: 0.3,
-                yoyo: true,
-                repeat: 1
-              });
-            }
-          });
-          gsap.fromTo(this.targets()[0], 
+            const index = gsap.utils.toArray(".animate-value").indexOf(this.targets()[0]);
+            gsap.to(this.targets()[0], {
+                onStart: function() {
+                    gsap.to(this.targets()[0].querySelector("h3"), {
+                        color: "#116611",
+                        duration: 0.3,
+                        yoyo: true,
+                        repeat: 1
+                    });
+                }
+            });
+            gsap.fromTo(this.targets()[0], 
             { "--shine-position": "-100%" },
             { "--shine-position": "200%", duration: 1.5, ease: "power2.inOut" }
-          );
-        },
-        repeat: -1,
-        repeatDelay: 5
-      });
-    }
-    
-    // Initial state of elements
-    gsap.set(".animate-heading", { opacity: 0, y: 50 });
-    gsap.set(".animate-intro", { opacity: 0, y: 30 });
-    gsap.set(".animate-value", { opacity: 0, scale: 0.8 });
-    
-    // Add some hover animations
-    gsap.utils.toArray(".animate-value").forEach(card => {
-      card.addEventListener("mouseenter", () => {
+        );
+    },
+    repeat: -1,
+    repeatDelay: 5
+});
+}
+
+// Initial state of elements
+// gsap.set(".animate-heading", { opacity: 0, y: 50 });
+// gsap.set(".animate-intro", { opacity: 0, y: 30 });
+// gsap.set(".animate-value", { opacity: 0, scale: 0.8 });
+
+// Add some hover animations
+gsap.utils.toArray(".animate-value").forEach(card => {
+    card.addEventListener("mouseenter", () => {
         gsap.to(card, { 
-          scale: 1.05, 
-          boxShadow: "0 10px 20px rgba(0,0,0,0.15)",
-          duration: 0.3 
+            scale: 1.05, 
+            boxShadow: "0 10px 20px rgba(0,0,0,0.15)",
+            duration: 0.3 
         });
         gsap.to(card.querySelector("h3"), { 
           scale: 1.1,
         //   color: "#0a8a0a", 
-          duration: 0.3 
-        });
-      });
-      
-      card.addEventListener("mouseleave", () => {
-        gsap.to(card, { 
-          scale: 1, 
-          boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
-          duration: 0.3 
-        });
-        gsap.to(card.querySelector("h3"), { 
-          scale: 1,
-          color: "inherit", 
-          duration: 0.3 
-        });
-      });
+        duration: 0.3 
     });
-  
+});
+
+card.addEventListener("mouseleave", () => {
+    gsap.to(card, { 
+        scale: 1, 
+        boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
+        duration: 0.3 
+    });
+    gsap.to(card.querySelector("h3"), { 
+        scale: 1,
+        color: "inherit", 
+        duration: 0.3 
+    });
+});
+});
+
+
+
 
 </script>
 

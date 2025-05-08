@@ -9,6 +9,11 @@
 
         ;
     }
+    .btn-text-dashboard{
+        font-size: 1.5rem;
+        font-weight: bold;
+        
+    }
 </style>
 <div class="container py-5">
     <!-- Welcome Banner -->
@@ -45,6 +50,14 @@
             </div>
           </div>
           
+    <div class="mb-5">
+        <a href="{% url 'scan' %}"">
+
+            <button class="btn btn-green btn-text-dashboard">
+                Take A Scan Now
+            </button>
+        </a>
+    </div>
         
     <!-- Results Section -->
     <div class="mb-5">

@@ -6,61 +6,59 @@
 {% load static %}
 
 
-<div class="container section green 5 p-5 auth-section">
-  <h1 class="text-center auth-heading mb-5">
-Signup
-  </h1>
-  <div class="container section py-5 px-5 bg-white">
-    <div class="row">
-      <div class="col-7 px-5">
-        <form  method="post">
-          {% csrf_token %}
-      
-          <div class="form-outline mb-4 ">
-            <div class="mb-4">
-              <label class="auth-form-heading fw-bolder" for="form3Example3">Username</label>
+<div class="container section green my-5 p-5 p-3 auth-section">
+  <h1 class="text-center auth-heading mb-3 mb-md-5">Signup</h1>
 
+  <div class="container section py-5 px-4 px-md-5 bg-white">
+    <div class="row flex-column flex-md-row align-items-center">
+      
+      <!-- Form Column -->
+      <div class="col-12 col-md-7 px-2 px-md-5">
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="form-outline mb-4">
+            <div class="mb-2 mb-md-4">
+              <label class="auth-form-heading fw-bolder" for="form3Example3">Username</label>
             </div>
             <input type="text" id="form3Example3" name="username" class="form-control form-control-lg"
-              placeholder="Enter your username" name="username" />
+              placeholder="Enter your username" />
           </div>
-      
-          <!-- Password input -->
-          <div class="form-outline mb-3">
-            <div class="mb-4">
-              <label class="auth-form-heading fw-bolder" for="form3Example3">Password</label>
 
-            </div>
-            <input type="password" id="form3Example4" name="passowrd" class="form-control form-control-lg"
-              placeholder="Enter password" name="pass"/>
-          </div>
           <div class="form-outline mb-3">
-            <div class="mb-4">
-              <label class="auth-form-heading fw-bolder" for="form3Example3">Confirm Password</label>
-
+            <div class="mb-2 mb-md-4">
+              <label class="auth-form-heading fw-bolder" for="form3Example4">Password</label>
             </div>
-            <input type="password" id="form3Example4" name="confirm_passowrd" class="form-control form-control-lg"
-              placeholder="Confirm Your Password" name="pass"/>
+            <input type="password" id="form3Example4" name="password" class="form-control form-control-lg"
+              placeholder="Enter password" />
           </div>
-      
-      
-      
-          <div class="text-center text-lg-start mt-4 pt-2">
-            <button  type="submit" class="auth-btn btn px-4 fw-bolder green">Signup</button>
-            <p class="small fw-bold mt-2 pt-1 mb-0 text-black">Already Have an account <a href="/login"
-                class="link-danger">Login</a></p>
+
+          <div class="form-outline mb-3">
+            <div class="mb-2 mb-md-4">
+              <label class="auth-form-heading fw-bolder" for="form3Example5">Confirm Password</label>
+            </div>
+            <input type="password" id="form3Example5" name="confirm_password" class="form-control form-control-lg"
+              placeholder="Confirm your password" />
           </div>
-      
+
+          <div class="text-center text-lg-start mt-3 mt-md-4 pt-2">
+            <button type="submit" class="auth-btn btn px-4 fw-bolder green">Signup</button>
+            <p class="small fw-bold mt-2 pt-1 mb-0 text-black">
+              Already have an account?
+              <a href="/login" class="link-danger">Login</a>
+            </p>
+          </div>
         </form>
       </div>
-      <div class="col-5 d-md-none d-lg-block">
-        <img src="{% static 'assets\signup.png' %}" class="img-fluid" alt="" srcset="">
+
+      <!-- Image Column -->
+      <div class="col-12 col-md-5 d-none d-md-block mt-4 mt-md-0">
+        <img src="{% static 'assets/signup.png' %}" class="img-fluid" alt="Signup" />
       </div>
+
     </div>
-
-
   </div>
-
 </div>
+
       
 {% endblock  %}

@@ -57,7 +57,7 @@ def predict(request):
         face_frontal = request.FILES.get("face_frontal")
         face_left = request.FILES.get("face_left")
         face_right = request.FILES.get("face_right")
-        use_for_training = request.POST.get("use_for_training", False)
+        use_for_training = "use_for_training" in request.POST
         faces = [face_frontal, face_left, face_right]
         
         # Validate that all images are uploaded
@@ -137,123 +137,186 @@ def predict(request):
 
 
 def view_results(request, result_id):
+    user = request.user if request.user.is_authenticated else None
+    result = None
+    owner = False
+
     try:
-        result = Result.objects.get(id=result_id)
+        # Check if the ID is numeric (i.e., owner's view)
+        if result_id.isdigit() and user:
+            result = Result.objects.get(id=int(result_id), user=user)
+            owner = True
+        else:
+            # Assume it's a shareable ID (public view)
+            result = Result.objects.get(shareable_id=result_id)
+
         visualizations = {}
         angles = ["frontal", "left", "right"]
-        
+
         for angle in angles:
             visualizations[angle] = {
-
                 "face": getattr(result, f"yolo_face_{angle}" if angle != "frontal" else f"yolo_face_front"),
                 "general_diseases": getattr(result, f"general_disease_masks_{angle}" if angle != "frontal" else f"general_disease_masks_front"),
                 "acne": getattr(result, f"acne_mask_{angle}" if angle != "frontal" else f"acne_mask_front"),
                 "original_face": getattr(result, f"face_{angle}" if angle != "frontal" else f"face_front"),
             }
 
-        # Get or create chat and messages
         chat = Chat.objects.filter(result=result).first()
         messages_qs = Message.objects.filter(chat=chat).order_by('sequence') if chat else []
-
-        # Flag to tell frontend whether RAG conversation is initialized
-        print(f"messages_qs: {messages_qs}")
         chat_history = [{"sender": m.sender, "content": m.content} for m in messages_qs]
-        print(f"history: {chat_history}")
-        print(len(chat_history))
-        rag_initialized = False if len(chat_history) == 0 else True
+        rag_initialized = len(chat_history) > 0
 
-        
         return render(request, 'results.html', {
             'visualizations': visualizations,
             'rag_initialized': rag_initialized,
-            'resultId': result_id,
+            'resultId': result.id,
+            'owner': owner,
             'chat_history': chat_history,
-
+            'result': result,
         })
+
     except Result.DoesNotExist:
-        messages.error(request, "Result not found.")
-        return redirect('predict')
-    
+        messages.error(request, "Result not found or access denied.")
+        return redirect('index')  # Redirect to a safe page (e.g., home page)
 
 def get_initial_rag_response(request, result_id: int):
     """
     Returns the initial bot message if conversation has started.
     """
-    try:
-        result = Result.objects.get(id=result_id)
-    except Result.DoesNotExist:
-        return JsonResponse({"success": False, "message": "Result not found."}, status=404)
+    if request.user.is_authenticated:
+            
+        try:
+            result = Result.objects.get(id=result_id,user = request.user)
+        except Result.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Result not found."}, status=404)
 
-    try:
-        chat = Chat.objects.get(result=result)
-    except Chat.DoesNotExist:
-        return JsonResponse({"success": False, "message": "Chat not initialized yet. Please wait."}, status=202)
+        try:
+            chat = Chat.objects.get(result=result)
+        except Chat.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Chat not initialized yet. Please wait."}, status=202)
 
-    message = Message.objects.filter(chat=chat, sender="assistant").order_by("sequence").first()
-    if not message:
-        return JsonResponse({"success": False, "message": "Chat is initialized but message not ready yet."}, status=202)
+        message = Message.objects.filter(chat=chat, sender="assistant").order_by("sequence").first()
+        if not message:
+            return JsonResponse({"success": False, "message": "Chat is initialized but message not ready yet."}, status=202)
 
+        return JsonResponse({
+            "success": True,
+            "message": message.content,
+            "chat_id": chat.id,
+        },status=200)
     return JsonResponse({
-        "success": True,
-        "message": message.content,
-        "chat_id": chat.id,
-    },status=200)
-
+                "success": True,
+                "message": "YOU ARE NOT ALLOWED TO TALK TO THE CHATBOT",
+                "chat_id": chat.id,
+            },status=200)
 
 
 @csrf_exempt
 def submit_rag_query(request):
     if request.method != "POST":
         return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
-    try:
-        data = json.loads(request.body)
-        result_id = data.get("result_id")
-        user_query = data.get("query")
-        if not result_id or not user_query:
-            return JsonResponse({"success": False, "message": "Missing 'result_id' or 'query'."}, status=400)
+    if request.user.is_authenticated:
+        user = request.user
 
-        result = Result.objects.get(id=result_id)
-        chat = Chat.objects.get(result=result)
+        try:
+            data = json.loads(request.body)
+            result_id = data.get("result_id")
+            user_query = data.get("query")
+            if not result_id or not user_query:
+                return JsonResponse({"success": False, "message": "Missing 'result_id' or 'query'."}, status=400)
 
-        # Load chat history
-        messages_qs = Message.objects.filter(chat=chat).order_by("sequence")
-        history = [{"role": m.sender, "content": m.content} for m in messages_qs]
-        print(f"history: {history}")
+            result = Result.objects.get(id=result_id,user = user)
+            chat = Chat.objects.get(result=result)
 
-        # Add new user message
+            # Load chat history
+            messages_qs = Message.objects.filter(chat=chat).order_by("sequence")
+            history = [{"role": m.sender, "content": m.content} for m in messages_qs]
+            print(f"history: {history}")
 
-        history.append({"role": "user", "content": user_query})
-        history = json.dumps(history,indent=2)
+            # Add new user message
 
-        # Call RAG pipeline
-        rag = Rag()
-        initial_res = {
-            "face_frontal": result.face_frontal_results,
-            "face_left": result.face_left_results,
-            "face_right": result.face_right_results,
-        }
-        ai_response = rag.followup_conversation(initial_res,history,user_query)
+            history.append({"role": "user", "content": user_query})
+            history = json.dumps(history,indent=2)
 
-        # Save user message after bot has replied   
-        user_message = Message.objects.create(chat=chat, sender="user", content=user_query)
-        user_message.save()
-        
-        # Save bot response
-        bot_message = Message.objects.create(chat=chat, sender="assistant", content=ai_response)
-        bot_message.save()
+            # Call RAG pipeline
+            rag = Rag()
+            initial_res = {
+                "face_frontal": result.face_frontal_results,
+                "face_left": result.face_left_results,
+                "face_right": result.face_right_results,
+            }
+            ai_response = rag.followup_conversation(initial_res,history,user_query)
 
-        return JsonResponse({
-            "success": True,
-            "response": ai_response,
-        })
+            # Save user message after bot has replied   
+            user_message = Message.objects.create(chat=chat, sender="user", content=user_query)
+            user_message.save()
+            
+            # Save bot response
+            bot_message = Message.objects.create(chat=chat, sender="assistant", content=ai_response)
+            bot_message.save()
 
-    except Result.DoesNotExist:
-        return JsonResponse({"success": False, "message": "Invalid result ID."}, status=404)
-    except Chat.DoesNotExist:
-        return JsonResponse({"success": False, "message": "Chat not initialized."}, status=404)
-    except Exception as e:
-        return JsonResponse({"success": False, "message": f"Error: {str(e)}"}, status=500)
+            return JsonResponse({
+                "success": True,
+                "response": ai_response,
+            })
 
+        except Result.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Invalid result ID."}, status=404)
+        except Chat.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Chat not initialized."}, status=404)
+        except Exception as e:
+            return JsonResponse({"success": False, "message": f"Error: {str(e)}"}, status=500)
+    else:
+        return JsonResponse({"success": False, "message": "You are not allowed to talk to the chatbot."}, status=401)
+
+
+def make_public(request,result_id:int):
+    if request.user.is_authenticated:
+        user = request.user
+        try:
+            result = Result.objects.get(id=result_id, user=user)
+            result.is_public = True
+            # generate a unique uuid without dashes
+            import uuid
+            result.shareable_id = str(uuid.uuid4()).replace("-", "")
+            result.save()
+            messages.success(request, "Scan made public successfully.")
+            return redirect('view_results', result_id=result.id)
+        except Result.DoesNotExist:
+            messages.error(request, "Result not found or you do not have permission to modify it.")
+            return redirect('view_results', result_id=result_id)
+    else:
+        return redirect('signup')
+    pass
+def make_private(request,result_id:int):
+    if request.user.is_authenticated:
+        user = request.user
+        try:
+            result = Result.objects.get(id=result_id, user=user)
+            result.is_public = False
+            result.shareable_id = None
+            result.save()
+            messages.success(request, "Scan made private successfully.")
+            return redirect('view_results', result_id=result.id)
+        except Result.DoesNotExist:
+            messages.error(request, "Result not found or you do not have permission to modify it.")
+            return redirect('view_results', result_id=result_id)
+    else:
+        return redirect('signup')
+    
+def delete_scan(request, result_id:int):
+    if request.user.is_authenticated:
+        user = request.user
+        try:
+            result = Result.objects.get(id=result_id, user=user)
+            result.delete()
+            messages.success(request, "Scan deleted successfully.")
+            return redirect('home')
+        except Result.DoesNotExist:
+            messages.error(request, "Result not found or you do not have permission to delete it.")
+            return redirect('home')
+    else:
+        return redirect('signup')
 
 
 def overlay_mask_on_face(face_image, mask, color=(0, 255, 0), alpha=1.0):

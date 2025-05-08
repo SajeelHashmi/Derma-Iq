@@ -5,20 +5,20 @@
 {% block body %}
 {% load static %}
 
-<div class="container  section green  p-5 mb-5" >
+<div class="container  section green py-5 mb-2 p-md-5 mb-md-5" >
     <div class="row align-items-center">
       <!-- Left Side: Hero Text + CTA -->
       <div class="col-md-8 px-5">
         <h1 class="mb-4 hero-heading text-wrap">Innovating Skincare for a Healthier Tomorrow </h1>
        <div class="container">
 
-         <p class="mb-4 hero-subtext fs-3">At DermaIQ, we use AI to detect facial skin concerns and deliver personalized skincare solutions. Experience smarter, simpler, and more effective skincare—anytime, anywhere.</p>
+         <p class="mb-4 hero-subtext ">At DermaIQ, we use AI to detect facial skin concerns and deliver personalized skincare solutions. Experience smarter, simpler, and more effective skincare—anytime, anywhere.</p>
          <a href="{% url 'scan' %}" class="btn button-cta">Scan Now</a>
         </div>
         </div>
   
       <!-- Right Side: Hero Image -->
-      <div class="col-md-4 hero-image-container">
+      <div class="col-md-4 d-none d-md-flex hero-image-container-home">
         <img src="{% static 'assets\hero-landing.png' %}" alt="Hero Image" class="img-fluid">
       </div>
     </div>
@@ -28,19 +28,19 @@
 
 
 
-  <div class="container p-5 mb-5 section shadow aboutUs "  >
+  <div class="container p-5  mb-2 mb-md-5 section shadow aboutUs "  >
     <div class="row ">
-      <div class="col-md-6">
-        <h2 class="mb-2 section-heading">About Us</h2>
+      <div class="col-md-6 col-12">
+        <h2 class="mb-2 section-heading-about">About Us</h2>
         <p class="mb-3   section-text-about  ">At DermaIQ, we believe that technology and care go hand in hand in building a healthier, more confident world. We stay at the forefront of AI innovation to deliver skincare solutions that make a real difference in people’s lives today, while shaping the future of personalized skin health. By putting our users at the center of everything we do, we craft experiences that not only meet but exceed expectations. Our goal is to empower individuals with the tools and knowledge to understand their skin better, make informed choices, and feel confident in their own beauty. Through innovation, compassion, and a commitment to excellence, we are redefining skincare — one face at a time.</p>
         
-          <button class="btn btn-green fs-4 mt-3">
+          <button class="btn btn-green  mt-3">
             About Us
           </button>
         </div>
       
       
-      <div class="col-md-6">
+      <div class="col-md-6 d-none d-md-block">
         <img src="https://media.istockphoto.com/id/1337199661/photo/beautiful-caucasian-woman-applying-cream-on-face.jpg?s=1024x1024&w=is&k=20&c=4ylvSnCfLjEqBwAyB3Ya_AHaknmreeQ2joyw1MTJU8w=" alt="Section Image" class="img-fluid">
       </div>
 
@@ -52,15 +52,15 @@
   <section class="storytelling-section container  py-5 mt-5">
     <div class="container ">
       <!-- Main heading -->
-      <div class="row mb-5">
+      <div class="row  mb-2 mb-md-5">
         <div class="col-12 text-center">
-          <h2 class="text-center mb-5 section-heading-2 main-heading-story">Your Path to Healthier Skin</h2>
+          <h2 class="text-center  mb-2 mb-md-5 section-heading-2 main-heading-story">Your Path to Healthier Skin</h2>
           <p class="section-subheading main-subheading-story">Follow Sarah's journey from frustration to confidence</p>
         </div>
       </div>
   
       <!-- Story Stage 1: The Problem -->
-      <div class="story-stage row align-items-center mb-5" id="story-stage-1">
+      <div class="story-stage row align-items-center mb-2 mb-md-5" id="story-stage-1">
         <div class="col-md-6 order-md-1 order-2">
           <div class="story-content">
             <h3 class="stage-heading">Struggling with Acne</h3>
@@ -78,7 +78,7 @@
       </div>
   
       <!-- Story Stage 2: Discovery -->
-      <div class="story-stage row align-items-center mb-5" id="story-stage-2">
+      <div class="story-stage row align-items-center  mb-2 mb-md-5" id="story-stage-2">
         <div class="col-md-6">
           <div class="story-image-container">
             <img src="https://images.pexels.com/photos/6001486/pexels-photo-6001486.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Person discovering the app" class="img-fluid rounded shadow">
@@ -96,7 +96,7 @@
       </div>
   
       <!-- Story Stage 3: Scanning & Analysis -->
-      <div class="story-stage row align-items-center mb-5" id="story-stage-3">
+      <div class="story-stage row align-items-center  mb-2 mb-md-5" id="story-stage-3">
         <div class="col-md-6 order-md-1 order-2">
           <div class="story-content">
             <h3 class="stage-heading">Advanced Skin Analysis</h3>
@@ -119,7 +119,7 @@
       </div>
   
       <!-- Story Stage 4: Personalized Recommendations -->
-      <div class="story-stage row align-items-center mb-5" id="story-stage-4">
+      <div class="story-stage row align-items-center  mb-2 mb-md-5" id="story-stage-4">
         <div class="col-md-6">
           <div class="story-image-container">
             <img src="https://images.pexels.com/photos/6476079/pexels-photo-6476079.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Person following recommendations" class="img-fluid rounded shadow">
@@ -148,7 +148,7 @@
       </div>
   
       <!-- Story Stage 5: Professional Connection -->
-      <div class="story-stage row align-items-center mb-5" id="story-stage-5">
+      <div class="story-stage row align-items-center  mb-2 mb-md-5" id="story-stage-5">
         <div class="col-md-6 order-md-1 order-2">
           <div class="story-content">
             <h3 class="stage-heading">Expert Guidance</h3>
@@ -196,7 +196,7 @@
   
 
   <div class="container py-5">
-    <h2 class="text-center mb-5 section-heading-2">Reviews✨</h2>
+    <h2 class="text-center  mb-2 mb-md-5 section-heading-2">Reviews✨</h2>
  
     <div id="testimonialCarousel" class="carousel slide pink section p-5" data-bs-ride="carousel">
       <div class="carousel-inner">
@@ -306,7 +306,7 @@ let introTimeline = gsap.timeline({
     trigger: ".main-heading-story", // the big heading
     start: "center center",
     toggleActions: "restart reverse restart reverse",
-    markers: true
+    // markers: true
   }
 });
 

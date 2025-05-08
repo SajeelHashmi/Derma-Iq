@@ -82,7 +82,8 @@
     </div>
  
 
-      
+{% if owner %}
+    
 <div class="container mt-5 ">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -129,14 +130,80 @@
 </div>
 
 
+{% if owner %}
+    
 <div class="container my-5 py-5">
     <div class="d-flex justify-content-center gap-5">
-      <button class="btn btn-green px-3 fs-4">Make Scan Public</button>
-      <button class="btn btn-green px-3 fs-4">Delete Scan Report</button>
+        {% if result.is_public %}
+        <a href="{% url 'makeScanPrivate' resultId %}">
+            
+            <button class="btn btn-green px-3 fs-4">Make Scan Private</button>
+
+        </a>
+
+        <a href="{% url 'deleteScan' resultId %}">
+            
+            <button class="btn btn-green px-3 fs-4">Delete Scan Report</button>
+        </a>
+
+
+        {% else %}
+        <a href="{% url 'makeScanPublic' resultId %}">
+            
+            <button class="btn btn-green px-3 fs-4">Make Scan Public</button>
+        </a>
+        <a href="{% url 'deleteScan' resultId %}">
+            
+            <button class="btn btn-green px-3 fs-4">Delete Scan Report</button>
+        </a>
+        {% endif %}
+
+        
     </div>
-  </div>
+</div>
+
+<div class="container text-center my-4">
+    {% if result.is_public %}
+        <h3>Scan Report is Public</h3>
+        <div class="input-group my-3 justify-content-center">
+            <input type="text" id="shareLink" class="form-control w-50" readonly value="{{ request.build_absolute_uri|cut:request.path }}{% url 'view_results' result.shareable_id %}">
+            <button class="btn btn-outline-secondary" onclick="copyToClipboard()">Copy</button>
+        </div>
+
+        <div class="my-2">
+            <a class="btn btn-success me-2" target="_blank"
+               href="https://wa.me/?text=View my skin analysis done with cutting-edge AI at DermaIQ!
+               {{ request.build_absolute_uri|cut:request.path }}{% url 'view_results' result.shareable_id %}">
+                Share on WhatsApp
+            </a>
+            <a class="btn btn-primary me-2" target="_blank"
+               href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|cut:request.path }}{% url 'view_results' result.shareable_id %}">
+                Share on Facebook
+            </a>
+            <a class="btn btn-info text-white" target="_blank"
+               href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|cut:request.path }}{% url 'view_results' result.shareable_id %}&text=View my skin analysis done with cutting-edge AI at DermaIQ!">
+                Share on Twitter
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    function copyToClipboard() {
+        const linkInput = document.getElementById("shareLink");
+        linkInput.select();
+        linkInput.setSelectionRange(0, 99999); // For mobile devices
+        document.execCommand("copy");
+        alert("Link copied to clipboard!");
+    }
+</script>
+
+{% endif %}
   
 {% csrf_token %}
+
+{% endif %}
+
 <!-- Add these styles in the existing style block or create a new style block -->
 <style>
     /* Chatbot specific styles */

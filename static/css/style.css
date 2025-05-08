@@ -68,8 +68,6 @@ font-weight: Weight Bold;
 font-size: 75px;
 line-height: 118%;
 letter-spacing: 0%;
-
-
 }
 
 .pink{
@@ -335,12 +333,7 @@ object-position: center;
 
 
 
-        .face-container {
-            position: relative;
-            width: 400px;
-            height: 400px;
-            margin: 0 auto;
-        }
+
         .face-image, .mask-overlay {
             position: absolute;
             top: 0;
@@ -359,25 +352,89 @@ object-position: center;
         .face-image {
             z-index: 1; /* Lower z-index than masks */
         }
-  
-@media (max-width: 767.98px) {
-  .story-stage {
-    padding: 2rem 0;
+
+
+
+.about-us-hero {
+  padding: 3rem 0;
+  margin-bottom: 2rem;
+}
+
+.hero-image-container {
+  max-height: 400px; /* Adjustable max-height constraint */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible; /* Important: allows image to extend beyond container if needed */
+}
+
+.hero-image-container.text-start {
+justify-content: flex-start;
+}
+
+.hero-image-container.text-end {
+justify-content: flex-end;
+}
+
+.hero-image-container img {
+  max-width: 100%;
+  max-height: 400px; /* Match container max-height */
+  height: auto;
+  width: auto;
+  object-fit: contain; /* Ensures the entire image is visible */
+}
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: bold;
+}
+.philosophy-section h1{
+  color: #467549;
+  font-family: Italiana;
+font-weight: Weight Bold;
+font-size: 4rem;
+line-height: 118%;
+letter-spacing: 0%;
+
+
+}
+.philosophy-section p{
+  font-family: Prata;
+font-weight: 400;
+font-size: 2rem;
+line-height: 100%;
+letter-spacing: 0%;
+
+}
+
+  .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+  .modal-dialog { max-width: 500px; }
+  .camera-icon{
+    font-size: 5rem;
   }
-  
-  .story-content {
-    margin-top: 1.5rem;
+  .hero-body-predict{
+    font-size: 1.5rem;
   }
-  
-  .results-metrics {
-    flex-direction: column;
+  .preview-img-predict{
+    height: 400px;
+    width: 400px;
   }
-  
-  .metric {
-    margin-bottom: 1.5rem;
-  }
-  
- 
+
+
+  .hero-subtext{
+  font-size: 1.5rem;
+  color: #FAF9F6;
+  font-weight: 600;
+}
+.core-val .section-text
+{
+  font-size: 2rem;
+}
+.animate-value-title{
+  font-size: 2rem;
+}
+.animate-value-text{
+  font-size: 1.5rem;
 }
 
 .navbar{
@@ -440,6 +497,9 @@ font-size: 20px;
 .hero-title{
   font-size: 4rem;
 }
+.hero-title-predict{  font-size: 4rem;
+}
+
 .angle-btn.active {
     background-color: #28462a;
     color: white;
@@ -453,3 +513,152 @@ font-size: 20px;
     background-color: #198754;
     color: white;
 }
+
+
+
+@media (max-width: 768px) {
+.core-val .section-text
+{
+  font-size: 1rem;
+}
+  .section-heading-2{
+  font-family: Italiana;
+font-weight: Weight Bold;
+font-size: 2rem;
+line-height: 118%;
+letter-spacing: 0%;
+}
+          .face-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+        }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+  .modal-dialog { max-width: 500px; }
+  .camera-icon{
+    font-size: 3rem;
+  }
+  .hero-body-predict{
+    font-size: 1rem;
+  }
+  .preview-img-predict{
+    height: 250px;
+    width: 250px;
+  }
+
+  .recommendation-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.4rem;
+  }
+  .stage-heading {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  
+
+  .story-content {
+    margin-top: 0.25rem;
+  }
+  
+.section-heading-about{
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.section-text-about{
+  font-size: 1rem;
+  line-height: 100%;
+  letter-spacing: 0%;
+}
+
+.main-heading-story{
+  font-size: 2rem;
+
+}
+.main-subheading-story{
+  font-size: 1.5rem;
+
+}
+.btn-green{
+  font-size:0.75rem
+}
+  .story-stage {
+    padding: 2rem 0;
+  }
+  
+  .story-content {
+    margin-top: 1.5rem;
+  }
+  
+  .results-metrics {
+    flex-direction: column;
+  }
+  
+  .metric {
+    margin-bottom: 1.5rem;
+  }
+  .hero-title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+.hero-title-predict{  font-size: 3rem;
+}
+.philosophy-section h1{
+  color: #467549;
+  font-family: Italiana;
+font-weight: Weight Bold;
+font-size: 2rem;
+line-height: 118%;
+letter-spacing: 0%;
+
+
+}
+.philosophy-section p{
+  font-family: Prata;
+font-weight: 400;
+font-size: 1rem;
+line-height: 100%;
+letter-spacing: 0%;
+
+}
+.text-aboutus{
+  font-size: 1rem;
+
+}
+
+.animate-value{
+font-size: 1rem;
+}
+.section-text{
+font-size: 1rem;
+}
+.animate-value-title{
+font-size: 1rem;
+}
+.animate-value-title{
+font-size: .75rem;
+
+
+}
+
+.hero-heading {
+font-weight: 700;
+font-size: 5rem;
+color: #FAF9F6;
+}
+
+.hero-heading {
+  font-weight: 700;
+  font-size: 2rem;
+  color: #FAF9F6;
+  }
+  .hero-subtext{
+    font-size: 1rem;
+    color: #FAF9F6;
+    font-weight: 600;
+  }
+}
+

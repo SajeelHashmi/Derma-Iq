@@ -20,7 +20,7 @@
   <div class="whitespace section rounded-0 green">
 
   </div>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light ">
+  <nav class="navbar navbar-expand-lg d-none d-md-block navbar-light bg-light ">
     <div class="container">
         <!-- Left side links -->
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -64,26 +64,63 @@
     </div>
 </nav>
 
+<nav class="navbar navbar-light bg-light d-block d-md-none">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a class="navbar-brand fs-4" href="{% url 'index' %}">DermaIQ</a>
+
+    <!-- Toggler -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavbar" aria-controls="mobileNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse mt-2" id="mobileNavbar">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'about' %}">About Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'contactUs' %}">Contact Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+             href={% if user.is_authenticated %}"{% url 'home' %}">Dashboard{% else %}"{% url 'signup' %}">Register{% endif %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+             href={% if user.is_authenticated %}"{% url 'logout' %}">Logout{% else %}"{% url 'login' %}">Login{% endif %}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
     {% block body %}
         
     {% endblock body %}
 
 
-    <footer class="bg-light py-5 mt-5">
+    <footer class="bg-light py-5 mt-5 prata border-top border-black">
       <div class="container">
         <div class="row">
-    
-          <!-- Left Side: Logo and About Text -->
+          
+          <!-- About Text -->
           <div class="col-md-6 mb-4 mb-md-0">
-            <p class="fs-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam scelerisque aliquam odio et faucibus.</p>
+            <h1>
+              DermaIQ
+            </h1>
+            <p class="fs-5">
+              At DermaIQ, we believe that technology and care go hand in hand in building a healthier, more confident world            </p>
           </div>
     
-          <!-- Right Side: 3 Columns -->
+          <!-- Links & Contact -->
           <div class="col-md-6">
             <div class="row">
-    
+              
               <!-- Useful Links -->
-              <div class="col-md-4 mb-3">
+              <div class="col-6 col-md-4 mb-3">
                 <h5>Useful Links</h5>
                 <ul class="list-unstyled">
                   <li><a href="#" class="text-decoration-none">Home</a></li>
@@ -94,7 +131,7 @@
               </div>
     
               <!-- Contact Us -->
-              <div class="col-md-4 mb-3">
+              <div class="col-6 col-md-4 mb-3">
                 <h5>Contact Us</h5>
                 <ul class="list-unstyled">
                   <li>Email: info@example.com</li>
@@ -103,14 +140,14 @@
                 </ul>
               </div>
     
-              <!-- Socials -->
-              <div class="col-md-4 mb-3">
+              <!-- Socials with Icons -->
+              <div class="col-12 col-md-4 mb-3">
                 <h5>Follow Us</h5>
-                <ul class="list-unstyled">
-                  <li><a href="#" class="text-decoration-none">Facebook</a></li>
-                  <li><a href="#" class="text-decoration-none">Twitter</a></li>
-                  <li><a href="#" class="text-decoration-none">Instagram</a></li>
-                  <li><a href="#" class="text-decoration-none">LinkedIn</a></li>
+                <ul class="list-unstyled d-flex gap-3">
+                  <li><a href="#" class="text-dark fs-4"><i class="fab fa-facebook-f"></i></a></li>
+                  <li><a href="#" class="text-dark fs-4"><i class="fab fa-twitter"></i></a></li>
+                  <li><a href="#" class="text-dark fs-4"><i class="fab fa-instagram"></i></a></li>
+                  <li><a href="#" class="text-dark fs-4"><i class="fab fa-linkedin-in"></i></a></li>
                 </ul>
               </div>
     
@@ -120,6 +157,7 @@
         </div>
       </div>
     </footer>
+    
   </body>
   <script src="{% static 'bootstrap-5.3.6-dist\js\bootstrap.min.js' %}"></script>
 

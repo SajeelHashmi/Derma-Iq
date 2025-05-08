@@ -30,7 +30,9 @@ class Result(models.Model):
     face_left_results = models.JSONField()
     face_right_results = models.JSONField()
 
-    public = models.BooleanField(default=False)
+    is_public = models.BooleanField(default=False)
+
+    shareable_id = models.CharField(max_length=255, blank=True, null=True,unique=True)
 
     def __str__(self):
         return f"Result {self.id} for {self.user.username} on {self.created_at}"
