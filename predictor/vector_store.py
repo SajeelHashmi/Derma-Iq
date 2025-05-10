@@ -8,6 +8,13 @@ from pinecone import Pinecone
 import tensorflow_hub as hub
 import tensorflow as tf 
 import logging
+import fitz  # PyMuPDF
+import nltk
+nltk.download('punkt')
+nltk.download('punkt_tab')
+from nltk.tokenize import sent_tokenize
+
+
 load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 class VectorStore:
@@ -29,6 +36,7 @@ class VectorStore:
 
         print("Initializing vector store...")
         self.index_name = os.getenv('PINECONE_INDEX_NAME')
+        print(f"Index name: {self.index_name}")
         pc = Pinecone(api_key=os.getenv("PINECONCE_API_KEY"))
         self.index = pc.Index(self.index_name)
 
@@ -39,10 +47,48 @@ class VectorStore:
 
     def embed(self, text: str)->list[float] :
             embed =self.model([text])
-            return embed[0]
+            return embed[0].numpy().tolist()  
+    
+    def chunk_text(self, text: str, chunk_size=500, overlap=100) -> list[str]:
+        sentences = sent_tokenize(text)
+        chunks = []
+        chunk = ""
+
+        for sentence in sentences:
+            if len(chunk) + len(sentence) <= chunk_size:
+                chunk += " " + sentence
+            else:
+                chunks.append(chunk.strip())
+                # Start new chunk with some overlap
+                chunk = " ".join(chunk.strip().split()[-overlap:]) + " " + sentence
+
+        if chunk:
+            chunks.append(chunk.strip())
+        return chunks
+
+    def add_pdf(self, pdf_path: str, namespace: str =None, meta_base: dict = None):
+        doc = fitz.open(pdf_path)
+        full_text = ""
+        for page in doc:
+            full_text += page.get_text()
+
+        chunks = self.chunk_text(full_text)
+        logging.info(f"PDF has been split into {len(chunks)} chunks.")
+
+        for i, chunk in enumerate(chunks):
+            metadata = meta_base.copy() if meta_base else {}
+            metadata["chunk_index"] = i
+            self.add(chunk, namespace=namespace, metadata=metadata)
+
+    def test_search_query(self, query: str, namespace: str):
+        print(f"Searching for: {query}")
+        result = self.search(query, namespace)
+        print("Retrieved text:")
+        print(result)
 
     def add(self, data: str, namespace: str, metadata: dict) -> bool:
         val = self.embed(data)
+        print(f"Embedding vector: {type(val)} ,{type(val[0])}")
         metadata["text"] = data
 
         vectors = [{
@@ -60,7 +106,7 @@ class VectorStore:
             values = self.embed(query)
             print(f"Query vector: {values}")
             response = self.index.query(
-                top_k=3,
+                top_k=5,
                 vector=values,
                 namespace=namespace,
                 include_metadata=True,
@@ -80,9 +126,11 @@ class VectorStore:
 #     embed = vector_store.embed(test_data)
 #     print(f"Embedding for '{test_data}': {embed}")
 
-# if __name__ == "__main__":
-    # vector_store = VectorStore()
-    # test_data = "This is a test data"
-    # embed = vector_store.embed(test_data)
-    # print(f"Embedding for '{test_data}': {len(embed)}")
-    # test()
+if __name__ == "__main__":
+    vector_store = VectorStore()
+    test_data = "This is a test data"
+    embed = vector_store.embed(test_data)
+    print(f"Embedding for '{test_data}': {len(embed)}")
+
+    vector_store.add_pdf("H:\FYP WEB APP\docs\SKIN_Diseases_PDF.pdf","general", {"source": "SKIN_Diseases_PDF.pdf"})
+    vector_store.test_search_query("What is the treatment for acne?", "general")

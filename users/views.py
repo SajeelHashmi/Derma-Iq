@@ -18,11 +18,12 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                messages.success(request=request,message="user logged in successfully")
                 print("user logged in successfully")
 
                 return redirect("home")
             else:
-                messages.success(request=request,message="incorrect user name or password")
+                messages.error(request=request,message="incorrect user name or password")
                 return redirect('login')
         else:
             return render(request , 'login.html', {})
