@@ -10,5 +10,3 @@ def about(request):
 def contact(request):
     return render(request, 'contactUs.html', {})
 
-def futureWork(request):
-    return render(request, 'futureWork.html', {})

@@ -18,7 +18,7 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.success(request=request,message="user logged in successfully")
+                messages.success(request=request,message="Login successful")
                 print("user logged in successfully")
 
                 return redirect("home")
@@ -31,7 +31,8 @@ def login_view(request):
 
 def logout_user(request):
     logout(request=request)
-    return redirect("login")
+    messages.success(request=request,message="Logout successful")
+    return redirect("index")
 
     
 def sign_up(request):
@@ -41,13 +42,15 @@ def sign_up(request):
 
         # print("method post")
         username = request.POST["username"]
-        pass1 = request.POST["passowrd"]
+        pass1 = request.POST["password"]
         pass2 = request.POST["confirm_password"]
 
         # validate the data in the form
         if pass1==pass2:
             user = User.objects.create_user(username=username, password=pass1)
             user.save()
+            messages.success(request=request,message="Welcome Aboard")
+
             login(request,user)
             return redirect("home")
         else:

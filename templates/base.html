@@ -15,6 +15,21 @@
 </head>
 
 
+<style>
+  .toast-msg{
+
+  }
+  .msg-error{
+    background-color: #ff0015;
+    color: #ffffff;
+
+  }
+  .msg-success{
+    background: rgba(255, 187, 155);
+    color: #155724;
+  }
+</style>
+
 <body >
 
   <div class="whitespace section rounded-0 green">
@@ -161,12 +176,14 @@
      class="position-fixed bottom-0 start-50 translate-middle-x p-3"
      style="z-index: 1100;">
   {% for message in messages %}
-    <div class="toast align-items-center text-white bg-{{ message.tags|default:'info' }} border-0 show mb-2"
+    <div class="toast align-items-center msg-{{ message.tags|default:'info' }} border-0 show mb-2"
          role="alert" aria-live="assertive" aria-atomic="true"
          data-bs-autohide="true" data-bs-delay="5000">
       <div class="d-flex">
-        <div class="toast-body">
-          {{ message }}
+        <div class="toast-body toast-msg prata text-center fs-4">
+          
+            {{ message }}
+          
         </div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>

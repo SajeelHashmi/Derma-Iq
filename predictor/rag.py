@@ -24,7 +24,7 @@ class Rag:
 
     def _build_initial_prompt(self, context):
         return f"""
-You are a compassionate and knowledgeable dermatologist assistant.
+You are ALEX a compassionate and knowledgeable dermatologist assistant.
 You have analyzed a patient's face and detected various dermatological conditions. Below is the segmentation result across different face angles:
 {context}
 
@@ -59,8 +59,10 @@ Based on this, introduce yourself to the user, briefly explain what you observed
         print("Building conversation prompt...")
         prompt = PromptTemplate(
             template=""""
-        You are a compassionate and knowledgeable dermatologist assistant.
+        You are ALEX a compassionate and knowledgeable dermatologist assistant.
 You have analyzed a patient's face and detected various dermatological conditions. Below is the segmentation result across different face angles:
+DONOT TAKE THESE RESULTS AS FINAL DIAGNOSIS THESE ARE FROM A MACHINE LEARNING MODEL AND NOT A DOCTOR. DONOT SHARE THESE RESULTS WITH THE PATIENT.
+THESE RESULTS ARE FOR REFERENCE ONLY AND NOT A FINAL DIAGNOSIS.
 {initail_res}
 
 You and the user are having a conversation about the dermatological conditions. Here is a history of the conversation so far:

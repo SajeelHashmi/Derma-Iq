@@ -50,7 +50,8 @@ def predict(request):
         user = request.user
     else:
         print(request.user)
-        messages.error(request, "Sign Up and begin Scanning.")
+        messages.error(request, "You need to be logged in to take a scan.")
+        
         return redirect('signup')
     if request.method == 'POST':
         # Get uploaded images
@@ -121,14 +122,15 @@ def predict(request):
             thread = Thread(target=init_chatbot_conversation, args=(result,))
             thread.start()
             print(f"Result saved with ID: {result.id}")
+            messages.success(request, "Scan completed successfully. Check your results. While Alex is analyzing your report")
             # This template will redirect to result page to avoid time consumption in development and to view old results
             return redirect('view_results', result.id)
             
-        except Exception as e:
+        except ValueError as e:
             import traceback
             error_msg = f"Error processing images: {str(e)}\n{traceback.format_exc()}"
             print(error_msg)
-            messages.error(request, error_msg)
+            messages.error(request, e)
             return redirect('scan')
     
     # GET request: show the upload form
@@ -280,7 +282,7 @@ def make_public(request,result_id:int):
             import uuid
             result.shareable_id = str(uuid.uuid4()).replace("-", "")
             result.save()
-            messages.success(request, "Scan made public successfully.")
+            messages.success(request, "Scan made public successfully. Share this with your Friends and Dermatologist " )
             return redirect('view_results', result_id=result.id)
         except Result.DoesNotExist:
             messages.error(request, "Result not found or you do not have permission to modify it.")
