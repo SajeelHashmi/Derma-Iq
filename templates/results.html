@@ -371,7 +371,7 @@ async function processUserMessage(message) {
                 </div>
             `;
             messageList.appendChild(userMessageDiv);
-            scrollToBottom();
+           // scrollToBottom();
             
             // Initial appear animation
             gsap.from(userMessageDiv, {
@@ -398,7 +398,7 @@ async function processUserMessage(message) {
                 </div>
             `;
             messageList.appendChild(botMessageDiv);
-            scrollToBottom();
+            // scrollToBottom();
            
         }
         // Function to add bot message with typing animation
@@ -408,7 +408,7 @@ async function processUserMessage(message) {
             message = marked.parse(message);
 
             typingIndicator.classList.remove('d-none');
-            scrollToBottom();
+            // scrollToBottom();
             
             // Simulate thinking time
             // const thinkingTime = 1000 + Math.random() * 2000; // 1-3 seconds
@@ -446,7 +446,7 @@ async function processUserMessage(message) {
                 // Stream in the text
                 streamText(message, messageElement);
                 
-                scrollToBottom();
+                // scrollToBottom();
             }, 0);
         }
         
@@ -515,7 +515,7 @@ async function processUserMessage(message) {
             // Add the next character
             current.node.textContent += current.text[currentCharIndex];
             currentCharIndex++;
-            scrollToBottom();
+            // scrollToBottom();
             
             // Random delay for realistic typing
             const delay = 0.0002 + Math.random() * 0.0004;
